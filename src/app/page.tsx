@@ -1,3 +1,9 @@
+import { Button } from "@/components/ui/button";
+import ChatPageBackground from "@/components/ui/ChatPageBackground";
+
+import { Input } from "@/components/ui/Input";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+
 import Image from "next/image";
 
 export default function Home() {
@@ -36,7 +42,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-39.5"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
@@ -51,7 +57,7 @@ export default function Home() {
             Deploy Now
           </a>
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
+            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-39.5"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
@@ -59,6 +65,29 @@ export default function Home() {
             Documentation
           </a>
         </div>
+
+        <Button>Start Making</Button>
+
+        <Input label="Email address" />
+
+        <ThemeToggle />
+
+        <ChatPageBackground>
+          <div>
+            Content Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel
+            totam perferendis dolorum eaque. Cupiditate, nisi repudiandae minus
+            aliquam iste dignissimos velit debitis molestiae vitae suscipit
+            alias sunt. Sit voluptate minima quidem eum soluta labore beatae
+            nobis eligendi ab quod numquam repudiandae modi qui vero quae nemo
+            laboriosam delectus, dolor quasi perferendis laborum rem iste nam
+            illum! Corporis molestiae ratione obcaecati quibusdam fugiat, ab
+            tempora nisi vitae quidem quisquam odit illum aspernatur iste. Sed
+            corporis impedit reprehenderit nemo, unde explicabo eaque provident
+            rem minima quod, dolor aut. Suscipit molestiae nihil, sapiente id
+            nisi distinctio saepe fugit omnis beatae accusantium possimus
+            assumenda. lorem3000
+          </div>
+        </ChatPageBackground>
       </main>
     </div>
   );
