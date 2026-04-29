@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/Typography";
-import HeaderNavLinks from "./HeaderNavLinks";
+import NavLinks from "../../../components/ui/NavLinks";
 import Link from "next/link";
+import VibeCraftLogo from "@/components/ui/Logo";
 
 const navLinks = [
   {
@@ -26,17 +26,12 @@ export default function MarketPlaceHeader() {
   return (
     <header className=" bg-canvas general-border">
       <div className="py-5 w-[90%] mx-auto flex items-center justify-between">
-        <Typography variant={"display-section"}>
-          <span className="text-primary text-[2.045625rem] leading-[36px]">
-            Vibe
-          </span>
-          <span className="text-brand italic">Craft</span>
-        </Typography>
+        <VibeCraftLogo />
 
         <nav className="flex items-center gap-5">
           {navLinks.map((navLinks) => (
             <Link key={navLinks.href} href={`#${navLinks.href}`}>
-              <HeaderNavLinks href={navLinks.text} />
+              <NavLinks href={navLinks.text} color={"secondary"} />
             </Link>
           ))}
           <Button>Start Making</Button>
