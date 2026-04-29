@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 @variant dark (&:where(.dark, .dark *));
@@ -161,4 +160,12 @@
   html {
     @apply font-sans;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.general-border {
+  border-bottom: 1px solid var(--subtle);
 }
