@@ -169,3 +169,17 @@ html {
 .general-border {
   border-bottom: 1px solid var(--subtle);
 }
+
+.hero-background {
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(ellipse 60% 80% at 15% 60%, #e8e2f480 0%, transparent 70%),
+    radial-gradient(ellipse 50% 70% at 85% 30%, #f27a1a22 0%, transparent 65%);
+}
+
+:is(.dark *) .hero-background,
+.dark .hero-background {
+  background-image:
+    radial-gradient(ellipse 60% 80% at 15% 60%, #e8e2f418 0%, transparent 70%),
+    radial-gradient(ellipse 50% 70% at 85% 30%, #f27a1a22 0%, transparent 65%);
+}
