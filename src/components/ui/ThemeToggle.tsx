@@ -1,6 +1,6 @@
 "use client";
 // Toggle light mode and dark mode
-import { useTheme } from "next-themes";
+import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
