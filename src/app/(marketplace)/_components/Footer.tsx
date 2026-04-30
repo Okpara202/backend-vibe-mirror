@@ -33,9 +33,9 @@ const companyLinks = [
 export default function MarketPlaceFooter() {
   return (
     <footer className="bg-canvas">
-      <div className="w-[90%] mx-auto general-border py-24 grid grid-cols-5 gap-20">
+      <div className="w-[90%] mx-auto general-border py-16 lg:py-24 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-20">
         {/* Footer Nav area */}
-        <aside className="col-span-2 flex flex-col gap-4 items-start">
+        <aside className="sm:col-span-3 lg:col-span-2 flex flex-col gap-4 items-start">
           <VibeCraftLogo />
           <Typography variant="body-sm" className="text-muted">
             Vibe it. Craft it. Launch it. Made by TekAIDA.

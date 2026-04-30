@@ -3,19 +3,19 @@ import { cn } from "@/lib/utils";
 const variantStyles = {
   // ── Display (Instrument Serif, Regular 400) ──
   "display-hero":
-    "font-serif font-normal text-[6rem] leading-[6.25rem] tracking-[0%] text-center",
+    "font-serif font-normal text-[2.75rem] leading-[3rem] sm:text-[3.5rem] sm:leading-[3.75rem] lg:text-[6rem] lg:leading-[6.25rem] tracking-[0%] text-center",
   "display-page":
-    "font-serif font-normal text-[4rem] leading-[4.375rem] tracking-[0%] text-center",
+    "font-serif font-normal text-[2.25rem] leading-[2.5rem] sm:text-[3rem] sm:leading-[3.25rem] lg:text-[4rem] lg:leading-[4.375rem] tracking-[0%] text-center",
   "display-section":
-    "font-serif font-normal text-[2.5rem] leading-[2.75rem] tracking-[0%] text-center",
+    "font-serif font-normal text-[1.75rem] leading-[2rem] lg:text-[2.5rem] lg:leading-[2.75rem] tracking-[0%] text-center",
 
   // ── Headings (Geist, Medium 500) ──
   "heading-h1":
-    "font-sans font-medium text-[2rem] leading-[2.375rem] tracking-[0%]",
+    "font-sans font-medium text-[1.5rem] leading-[1.875rem] lg:text-[2rem] lg:leading-[2.375rem] tracking-[0%]",
   "heading-h3":
-    "font-sans font-medium text-[1.25rem] leading-[1.75rem] tracking-[0%] text-center",
+    "font-sans font-medium text-[1.125rem] leading-[1.625rem] lg:text-[1.25rem] lg:leading-[1.75rem] tracking-[0%] text-center",
   "heading-h4":
-    "font-sans font-medium text-[1rem] leading-[1.5rem] tracking-[0%] text-center",
+    "font-sans font-medium text-[0.9375rem] leading-[1.4rem] lg:text-[1rem] lg:leading-[1.5rem] tracking-[0%] text-center",
 
   // ── Labels (Geist, Medium 500) ──
   "label-lg":

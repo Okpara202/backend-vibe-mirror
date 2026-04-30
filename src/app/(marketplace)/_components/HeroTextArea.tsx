@@ -25,7 +25,7 @@ export default function HeroTextArea() {
 
   return (
     <div className="space-y-5 w-full">
-      <aside className="flex items-center justify-center gap-2">
+      <aside className="flex flex-wrap items-center justify-center gap-2">
         <DotTextTag
           dotColor="#F27A1A"
           text="Website"

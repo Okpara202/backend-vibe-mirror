@@ -57,7 +57,7 @@ export default function ThreeStepsThatsIt() {
   ));
   return (
     <section id="how-it-works" className="bg-canvas general-border">
-      <div className="w-[90%] py-24 space-y-10 mx-auto">
+      <div className="w-[90%] py-16 lg:py-24 space-y-10 mx-auto">
         <Typography variant="display-section">
           <span className="text-primary">Three steps.</span>{" "}
           <span className="text-brand">That&apos;s it.</span>
@@ -66,7 +66,9 @@ export default function ThreeStepsThatsIt() {
         <Typography variant="heading-h4" className="text-secondary">
           Three simple steps and your product is ready.
         </Typography>
-        <div className="grid grid-cols-3 gap-6">{stepCard}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {stepCard}
+        </div>
       </div>
     </section>
   );
