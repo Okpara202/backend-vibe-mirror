@@ -203,21 +203,19 @@ html {
 }
 
 .brand-radial {
-  /* Light: dimmed (25% brand) + soft spread (45%) */
   background: radial-gradient(
     circle at center,
-    color-mix(in srgb, var(--brand) 25%, var(--canvas)) 0%,
-    var(--canvas) 45%
+    color-mix(in srgb, var(--brand) 10%, var(--canvas)) 0%,
+    var(--canvas) 30%
   );
 }
 
-/* Dark: dimmed (40% brand) + softer spread (65%) */
 :is(.dark *) .brand-radial,
 .dark .brand-radial {
   background: radial-gradient(
     circle at center,
-    color-mix(in srgb, var(--brand) 40%, var(--canvas)) 0%,
-    var(--canvas) 65%
+    color-mix(in srgb, var(--brand) 15%, var(--canvas)) 0%,
+    var(--canvas) 45%
   );
 }
 

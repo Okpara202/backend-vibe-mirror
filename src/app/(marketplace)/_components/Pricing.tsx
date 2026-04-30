@@ -107,7 +107,7 @@ export default function Pricing() {
 
   return (
     <section id="pricing" className="bg-canvas general-border">
-      <div className="w-[90%] py-24 space-y-10 mx-auto">
+      <div className="w-[90%] py-16 lg:py-24 space-y-10 mx-auto">
         <Typography variant="display-section">
           <span className="text-primary">Start Free.</span>{" "}
           <span className="text-brand">Grow</span>{" "}
@@ -118,7 +118,9 @@ export default function Pricing() {
           No credit card. No trial that expires.
         </Typography>
 
-        <div className="grid grid-cols-3 gap-6">{pricingCard}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pricingCard}
+        </div>
       </div>
     </section>
   );

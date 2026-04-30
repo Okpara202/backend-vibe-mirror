@@ -1,12 +1,12 @@
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Typography } from "@/components/ui/Typography";
 import DotTextTag from "./DotTextTag";
 import HeroTextArea from "./HeroTextArea";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function Hero() {
   return (
-    <section className="general-border hero-background py-32 ">
-      <div className="flex items-center flex-col justify-center gap-8 max-w-lg mx-auto">
+    <section className="general-border hero-background py-16 lg:py-32">
+      <div className="flex items-center flex-col justify-center gap-8 max-w-lg mx-auto w-[90%]">
         <div className="space-y-10 text-center">
           <DotTextTag
             dotColor="#F27A1A"
@@ -25,9 +25,10 @@ export default function Hero() {
           </aside>
 
           <HeroTextArea />
+
+          <ThemeToggle />
         </div>
       </div>
-      <ThemeToggle />
     </section>
   );
 }

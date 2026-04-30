@@ -4,7 +4,7 @@ const trustees = ["Product Hunt", "Indie Hackers", "Hacker News", "TechCrunch"];
 
 export default function TrustedByMakers() {
   return (
-    <section className="bg-canvas flex w-full items-center justify-center gap-6 py-16 general-border">
+    <section className="bg-canvas flex flex-wrap w-full items-center justify-center gap-x-6 gap-y-3 px-4 py-10 lg:py-16 general-border">
       <Typography variant="code-md" className="text-secondary">
         TRUSTED BY MAKERS
       </Typography>
