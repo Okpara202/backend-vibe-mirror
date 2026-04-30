@@ -1,4 +1,3 @@
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Typography } from "@/components/ui/Typography";
 
 const steps = [
@@ -28,10 +27,10 @@ const steps = [
 export default function ThreeStepsThatsIt() {
   const stepCard = steps.map((step) => (
     <div
-      className="bg-surface rounded-[12px] px-5 flex flex-col justify-between"
+      className="bg-surface rounded-[12px] px-5 flex flex-col justify-between hover:scale-105  transition-all duration-300"
       key={step.step}
     >
-      <aside className="py-8 flex flex-col gap-3 items-start general-border">
+      <aside className="py-8 flex flex-col gap-3 items-start ">
         <Typography
           variant="display-page"
           className={`${step.step === 1 ? "text-brand" : "text-primary"}`}
@@ -49,7 +48,7 @@ export default function ThreeStepsThatsIt() {
           {step.desc}
         </Typography>
       </aside>
-      <aside className="py-8">
+      <aside className="py-8 general-border-top">
         <Typography variant="caption-mono" className="text-muted">
           {step.footNote}
         </Typography>
@@ -68,7 +67,6 @@ export default function ThreeStepsThatsIt() {
           Three simple steps and your product is ready.
         </Typography>
         <div className="grid grid-cols-3 gap-6">{stepCard}</div>
-        <ThemeToggle />
       </div>
     </section>
   );
