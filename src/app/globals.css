@@ -63,6 +63,10 @@
   --color-secondary: var(--secondary);
   --color-input-helper: var(--input-helper);
   --color-muted: var(--muted);
+  --color-success: var(--success);
+  --color-accent: var(--accent);
+  --color-hover: var(--hover);
+  --color-brand: var(--brand);
 }
 
 :root {
@@ -106,6 +110,10 @@
   --secondary: #7c7b74;
   --input-helper: #7c7b74;
   --muted: #a3a29a;
+  --success: #edfaf3;
+  --accent: #f5f0ff;
+  --hover: #fff7f0;
+  --brand: #f27a1a;
 }
 
 .dark {
@@ -148,6 +156,10 @@
   --secondary: #b5b4ae;
   --input-helper: #7c7b74;
   --muted: #7c7b74;
+  --success: #edfaf3;
+  --accent: #f5f0ff;
+  --hover: #fff7f0;
+  --brand: #f27a1a;
 }
 
 @layer base {
@@ -168,4 +180,18 @@ html {
 
 .general-border {
   border-bottom: 1px solid var(--subtle);
+}
+
+.hero-background {
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(ellipse 60% 80% at 15% 60%, #e8e2f480 0%, transparent 70%),
+    radial-gradient(ellipse 50% 70% at 85% 30%, #f27a1a22 0%, transparent 65%);
+}
+
+:is(.dark *) .hero-background,
+.dark .hero-background {
+  background-image:
+    radial-gradient(ellipse 60% 80% at 15% 60%, #e8e2f418 0%, transparent 70%),
+    radial-gradient(ellipse 50% 70% at 85% 30%, #f27a1a22 0%, transparent 65%);
 }

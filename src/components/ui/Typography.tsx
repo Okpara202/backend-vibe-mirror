@@ -89,16 +89,3 @@ export function Typography({
     <Tag className={cn(variantStyles[variant], className)}>{children}</Tag>
   );
 }
-
-// usage
-{
-  /* <Typography variant="display-hero">Welcome</Typography>
-<Typography variant="heading-h1">Title</Typography>
-<Typography variant="label-md">Form label</Typography>
-<Typography variant="code-md">npm install</Typography> 
-// Renders as a div instead of h1
-<Typography variant="display-hero" as="div">
-  content here
-</Typography>
-*/
-}
