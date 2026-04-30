@@ -222,3 +222,12 @@ html {
 .hero-textarea-shadow {
   box-shadow: 4px 4px 20px 0px #0000000f;
 }
+
+.auth-link {
+  color: var(--brand);
+}
+
+.auth-link:hover {
+  text-decoration-line: underline;
+  text-decoration-color: var(--brand);
+}

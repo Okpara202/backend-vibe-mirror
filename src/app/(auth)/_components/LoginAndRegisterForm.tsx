@@ -13,6 +13,7 @@ interface LoginAndRegisterFormProps {
 export default function LoginAndRegisterForm({
   mode,
 }: LoginAndRegisterFormProps) {
+  const login = mode === "Login";
   return (
     <form className="space-y-4 w-full">
       <div className="text-center">
@@ -48,25 +49,21 @@ export default function LoginAndRegisterForm({
           placeholder="At least 8 characters"
           type="password"
         />
-        <Link
-          href="/forgot-password"
-          className="hover:underline hover:decoration-brand"
-        >
-          <Typography variant="caption-default" className="text-brand">
-            Forgot password?
-          </Typography>
-        </Link>
+        {login && (
+          <Link href="/forgot-password" className="auth-link">
+            <Typography variant="caption-default" className="text-brand">
+              Forgot password?
+            </Typography>
+          </Link>
+        )}
       </div>
 
-      <Button className="w-full">Sign Up</Button>
+      <Button className="w-full">{login ? "Sign In" : "Sign Up"}</Button>
 
       <Typography variant="heading-h4" className="text-secondary text-left">
-        Don&apos;t have an account?{" "}
-        <Link
-          href="/register"
-          className="hover:underline hover:decoration-brand text-brand"
-        >
-          Sign Up
+        {login ? "Don't have an account?" : "Already have an account?"}
+        <Link href={login ? "/register" : "/login"} className="auth-link">
+          {login ? " Sign Up" : " Sign In"}
         </Link>
       </Typography>
     </form>
