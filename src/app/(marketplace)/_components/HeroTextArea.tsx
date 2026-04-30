@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Typography } from "@/components/ui/Typography";
-import DotTextTag from "./DotTextTag";
+import DotTextTag from "../../../components/ui/DotTextTag";
 
 const MAX_LENGTH = 500;
 

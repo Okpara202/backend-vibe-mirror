@@ -39,7 +39,10 @@ export default function MarketPlaceHeader() {
               <NavLinks href={navLinks.text} color={"secondary"} />
             </Link>
           ))}
-          <Button>Start Making</Button>
+
+          <Link href={"/register"}>
+            <Button>Start Making </Button>
+          </Link>
         </nav>
 
         <button
@@ -94,7 +97,9 @@ export default function MarketPlaceHeader() {
                 <NavLinks href={link.text} color={"secondary"} />
               </Link>
             ))}
-            <Button className="w-full">Start Making</Button>
+            <Link href={"/register"}>
+              <Button>Start Making </Button>
+            </Link>
           </nav>
         </div>
       )}
