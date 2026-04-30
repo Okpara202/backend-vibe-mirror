@@ -37,7 +37,7 @@ export default function RealPeopleRealThings() {
   const peopleCreatedCard = realPeopleRealThings.map((creations) => (
     <div
       key={creations.creator}
-      className="flex flex-col relative overflow-hidden rounded-[12px] hover:scale-105"
+      className="flex flex-col relative overflow-hidden rounded-[12px] hover:scale-105 transition-all duration-300"
     >
       <Image
         src={creations.img}
