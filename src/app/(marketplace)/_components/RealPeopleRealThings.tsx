@@ -1,12 +1,14 @@
 import { Typography } from "@/components/ui/Typography";
 import Image from "next/image";
 import Avatar from "./Avatar";
+import PillButton from "./PillButton";
 
 const realPeopleRealThings = [
   {
     img: "/image/peopleCreatedPink.jpg",
     title: "David's bakery",
     creator: "David",
+    pillText: "Website",
     age: 34,
     desc: "Menu, photos, online ordering. Built in 12 minutes",
     id: "Baker in Manchester",
@@ -16,6 +18,7 @@ const realPeopleRealThings = [
     title: "Elizabeth's memoir",
     creator: "Elizabeth",
     age: 68,
+    pillText: "Book",
     desc: "Family stories, photos, chapter headings.",
     id: "Retired teacher",
   },
@@ -23,6 +26,7 @@ const realPeopleRealThings = [
     img: "/image/peopleCreatedGreen.jpg",
     title: "Maya's Quix",
     creator: "Maya",
+    pillText: "Game",
     age: 11,
     desc: "World capitals quiz: 47 kids played on day one",
     id: "Student",
@@ -43,6 +47,25 @@ export default function RealPeopleRealThings() {
         className="w-full h-auto object-cover"
       />
       <div className="bg-surface px-5 py-5 space-y-3">
+        {/* Pill Button */}
+        <PillButton
+          tag={creations.pillText}
+          bgColor={
+            creations.creator === "Elizabeth"
+              ? "#F5F0FF"
+              : creations.creator === "Maya"
+                ? "#EDFAF3"
+                : "#FFF7F0"
+          }
+          dotColor={
+            creations.creator === "Elizabeth"
+              ? "#7E3FF2"
+              : creations.creator === "Maya"
+                ? "#4ADE80"
+                : "#F27A1A"
+          }
+        />
+
         <Typography variant="body-sm" className="text-primary">
           {creations.title}
         </Typography>
@@ -81,6 +104,7 @@ export default function RealPeopleRealThings() {
       </div>
     </div>
   ));
+
   return (
     <section id="gallery" className="bg-canvas general-border">
       <div className="w-[90%] py-24 space-y-10 mx-auto">

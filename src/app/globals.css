@@ -63,6 +63,10 @@
   --color-secondary: var(--secondary);
   --color-input-helper: var(--input-helper);
   --color-muted: var(--muted);
+  --color-success: var(--success);
+  --color-accent: var(--accent);
+  --color-hover: var(--hover);
+  --color-brand: var(--brand);
 }
 
 :root {
@@ -106,6 +110,10 @@
   --secondary: #7c7b74;
   --input-helper: #7c7b74;
   --muted: #a3a29a;
+  --success: #edfaf3;
+  --accent: #f5f0ff;
+  --hover: #fff7f0;
+  --brand: #f27a1a;
 }
 
 .dark {
@@ -148,6 +156,10 @@
   --secondary: #b5b4ae;
   --input-helper: #7c7b74;
   --muted: #7c7b74;
+  --success: #edfaf3;
+  --accent: #f5f0ff;
+  --hover: #fff7f0;
+  --brand: #f27a1a;
 }
 
 @layer base {
