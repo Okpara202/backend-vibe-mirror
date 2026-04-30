@@ -1,5 +1,5 @@
 import { Typography } from "@/components/ui/Typography";
-import DotTextTag from "./DotTextTag";
+import DotTextTag from "../../../components/ui/DotTextTag";
 import HeroTextArea from "./HeroTextArea";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
@@ -25,10 +25,10 @@ export default function Hero() {
           </aside>
 
           <HeroTextArea />
-
-          <ThemeToggle />
         </div>
       </div>
+
+      <ThemeToggle />
     </section>
   );
 }
