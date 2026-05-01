@@ -1,7 +1,5 @@
+import DashboardChat from "./_components/DashboardChat";
+
 export default function DashboardPage() {
-  return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
-  );
+  return <DashboardChat />;
 }

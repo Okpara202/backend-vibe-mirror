@@ -1,4 +1,5 @@
 import LeftDashboard from "./_components/LeftDashboard";
+import MobileSidebarDrawer from "./_components/MobileSidebarDrawer";
 import RightHeader from "./_components/RightHeader";
 
 export default function DashboardLayout({
@@ -8,10 +9,11 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex">
-      <aside className="basis-[23%] bg-sidebar-fill h-screen sticky top-0">
+      <aside className="hidden lg:block lg:basis-[23%] bg-sidebar-fill h-screen sticky top-0">
         <LeftDashboard />
       </aside>
-      <aside className="flex-1 border-l border-default min-h-screen">
+      <MobileSidebarDrawer />
+      <aside className="flex-1 lg:border-l border-default min-h-screen bg-canvas min-w-0">
         <RightHeader />
         {children}
       </aside>
