@@ -72,6 +72,9 @@
   --color-sidebar-fill-active: var(--sidebar-fill-active);
   --color-sidebar-active-link: var(--sidebar-active-link);
   --color-sidebar-link-text: var(--sidebar-link-text);
+  --color-chat-user-border: var(--chat-user-border);
+  --color-chat-user-fill: var(--chat-user-fill);
+  --color-chat-user-text: var(--chat-user-text);
 }
 
 :root {
@@ -125,6 +128,9 @@
   --sidebar-fill-active: #fff7f0;
   --sidebar-active-link: #d45e0a;
   --sidebar-link-text: #686867;
+  --chat-user-border: #dddcd6;
+  --chat-user-fill: #ffffff;
+  --chat-user-text: #2a2926;
 }
 
 .dark {
@@ -177,6 +183,9 @@
   --sidebar-fill-active: #fff7f0;
   --sidebar-active-link: #d45e0a;
   --sidebar-link-text: #b5b4ae;
+  --chat-user-border: #3d3c38;
+  --chat-user-fill: #2a2926;
+  --chat-user-text: #f5f4f1;
 }
 
 @layer base {

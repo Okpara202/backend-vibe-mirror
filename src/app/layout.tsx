@@ -7,7 +7,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+// import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,9 +49,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           {children}
-          <div className="fixed bottom-4 right-4 z-50">
+          {/* <div className="fixed bottom-4 right-4 z-50">
             <ThemeToggle />
-          </div>
+          </div> */}
         </ThemeProvider>
       </body>
     </html>
