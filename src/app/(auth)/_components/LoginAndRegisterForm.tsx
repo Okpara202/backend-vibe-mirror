@@ -58,7 +58,9 @@ export default function LoginAndRegisterForm({
         )}
       </div>
 
-      <Button className="w-full">{login ? "Sign In" : "Sign Up"}</Button>
+      <Button className="w-full">
+        <Link href="/dashboard">{login ? "Sign In" : "Sign Up"}</Link>
+      </Button>
 
       <Typography variant="heading-h4" className="text-secondary text-left">
         {login ? "Don't have an account?" : "Already have an account?"}

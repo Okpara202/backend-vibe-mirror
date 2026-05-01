@@ -1,7 +1,6 @@
 import { Typography } from "@/components/ui/Typography";
 import DotTextTag from "../../../components/ui/DotTextTag";
 import HeroTextArea from "./HeroTextArea";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function Hero() {
   return (
@@ -27,8 +26,6 @@ export default function Hero() {
           <HeroTextArea />
         </div>
       </div>
-
-      <ThemeToggle />
     </section>
   );
 }

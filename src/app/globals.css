@@ -67,6 +67,11 @@
   --color-hover: var(--hover);
   --color-brand: var(--brand);
   --color-default: var(--default);
+  --color-sidebar-fill: var(--sidebar-fill);
+  --color-icon-secondary: var(--icon-secondary);
+  --color-sidebar-fill-active: var(--sidebar-fill-active);
+  --color-sidebar-active-link: var(--sidebar-active-link);
+  --color-sidebar-link-text: var(--sidebar-link-text);
 }
 
 :root {
@@ -115,6 +120,11 @@
   --hover: #fff7f0;
   --brand: #f27a1a;
   --default: #dddcd6;
+  --sidebar-fill: #ffffff;
+  --icon-secondary: #686867;
+  --sidebar-fill-active: #fff7f0;
+  --sidebar-active-link: #d45e0a;
+  --sidebar-link-text: #686867;
 }
 
 .dark {
@@ -162,6 +172,11 @@
   --hover: #fff7f0;
   --brand: #f27a1a;
   --default: #3d3c38;
+  --sidebar-fill: #1e1d1a;
+  --icon-secondary: #b5b4ae;
+  --sidebar-fill-active: #fff7f0;
+  --sidebar-active-link: #d45e0a;
+  --sidebar-link-text: #b5b4ae;
 }
 
 @layer base {
