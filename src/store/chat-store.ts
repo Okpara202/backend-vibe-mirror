@@ -10,10 +10,18 @@ export const useChatStore = create<ChatStore>((set) => ({
   error: null,
   planMode: false,
   selectedType: null,
+  isLoadingMessages: false,
 
   loadConversation: async (id) => {
-    set({ status: "idle", messages: [], activeConversationId: id });
-    // API call goes here — populate messages from response
+    set({ isLoadingMessages: true, messages: [], activeConversationId: id });
+    try {
+      // API call goes here — populate messages from response
+      // set({ messages: result })
+    } catch {
+      set({ error: "Failed to load conversation." });
+    } finally {
+      set({ isLoadingMessages: false });
+    }
   },
 
   startNewChat: () =>

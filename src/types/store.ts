@@ -39,6 +39,7 @@ export interface ChatStore {
   error: string | null;
   planMode: boolean;
   selectedType: CreationType | null;
+  isLoadingMessages: boolean;
   loadConversation: (id: string) => Promise<void>;
   startNewChat: () => void;
   addMessage: (m: Message) => void;
