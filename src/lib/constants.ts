@@ -1,5 +1,13 @@
 import type { CreationType, Tier } from "@/types";
 
+// ── Tier display labels ────────────────────────────────────────────────
+// Presentation strings only. Feature gating lives in TIER_FEATURES below.
+export const TIER_LABELS: Record<Tier, string> = {
+  free: "Free",
+  beginner: "Beginner",
+  pro: "Pro",
+};
+
 // ── Referral links ────────────────────────────────────────────────────
 // TODO: Replace all href values with real TekAIDA affiliate tracking URLs
 // before launch. Do not change labels or structure — only the href strings.
@@ -42,14 +50,21 @@ export const SUCCESS_MESSAGES: Record<
 };
 
 // ── Tier features ──────────────────────────────────────────────────────
-// TODO: confirm exact shape with stakeholders when the upgrade flow / pricing
-// page consumes this. Keeping it minimal for now so unrelated work isn't
-// blocked.
-export const TIER_FEATURES: Record<
-  Tier,
-  { label: string; monthlyTokens: number; features: string[] }
-> = {
-  free: { label: "Free", monthlyTokens: 0, features: [] },
-  beginner: { label: "Beginner", monthlyTokens: 0, features: [] },
-  pro: { label: "Pro", monthlyTokens: 0, features: [] },
-};
+// UI-side feature flags. Backend enforces real access control.
+export const TIER_FEATURES = {
+  free: {
+    canUseBuildAgent: false,
+    canUseAutonomousAgent: false,
+    canAccessMonetisation: false,
+  },
+  beginner: {
+    canUseBuildAgent: true,
+    canUseAutonomousAgent: false,
+    canAccessMonetisation: false,
+  },
+  pro: {
+    canUseBuildAgent: true,
+    canUseAutonomousAgent: true,
+    canAccessMonetisation: true,
+  },
+} as const satisfies Record<Tier, Record<string, boolean>>;

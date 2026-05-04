@@ -7,7 +7,7 @@ import { Typography } from "@/components/ui/Typography";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth-store";
 import { useUIStore } from "@/store/ui-store";
-import { TIER_FEATURES } from "@/lib/constants";
+import { TIER_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export default function OwnersDetails() {
@@ -33,7 +33,7 @@ export default function OwnersDetails() {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [open]);
 
-  const tierLabel = TIER_FEATURES[tier].label;
+  const tierLabel = TIER_LABELS[tier];
   const showTokenBalance = tier === "beginner" || tier === "pro";
   const showUpgrade = tier !== "pro";
 

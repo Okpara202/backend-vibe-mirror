@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useChatStore } from "@/store/chat-store";
 import { useAuthStore } from "@/store/auth-store";
 import { Typography } from "@/components/ui/Typography";
@@ -12,7 +13,37 @@ import UpgradeModal from "./UpgradeModal";
 export default function DashboardChat() {
   const messages = useChatStore((s) => s.messages);
   const isLoadingMessages = useChatStore((s) => s.isLoadingMessages);
+  const addMessage = useChatStore((s) => s.addMessage);
+  const setSelectedType = useChatStore((s) => s.setSelectedType);
   const userName = useAuthStore((s) => s.user?.name) ?? "there";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = sessionStorage.getItem("vibecraft_pending_message");
+    if (!raw) return;
+    sessionStorage.removeItem("vibecraft_pending_message");
+    try {
+      const payload = JSON.parse(raw);
+      if (payload?.text) {
+        if (payload.type) setSelectedType(payload.type);
+        addMessage({
+          id: crypto.randomUUID(),
+          role: "user",
+          content: {
+            text: payload.text,
+            attachments:
+              Array.isArray(payload.attachments) && payload.attachments.length
+                ? payload.attachments
+                : undefined,
+          },
+          timestamp: new Date(),
+        });
+        // TODO: auto-fire AI call when backend is ready
+      }
+    } catch {
+      /* malformed — ignore */
+    }
+  }, [addMessage, setSelectedType]);
 
   const showConversation = isLoadingMessages || messages.length > 0;
 

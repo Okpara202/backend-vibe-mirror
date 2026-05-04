@@ -67,11 +67,21 @@ export interface GameContent {
   qualityChecks?: string[];
 }
 
+// ── User attachments ───────────────────────────────────────────────────
+export interface UserAttachment {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  /** transient blob URL while pending upload; backend URL once uploaded */
+  previewUrl?: string;
+}
+
 // ── Message union ──────────────────────────────────────────────────────
 export type UserMessage = {
   id: string;
   role: "user";
-  content: { text: string };
+  content: { text: string; attachments?: UserAttachment[] };
   timestamp: Date;
 };
 

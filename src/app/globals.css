@@ -213,17 +213,60 @@ html {
 }
 
 .hero-background {
+  position: relative;
+  isolation: isolate;
   background-color: var(--canvas);
-  background-image:
-    radial-gradient(ellipse 60% 80% at 15% 60%, #7e3ff280 0%, transparent 70%),
-    radial-gradient(ellipse 50% 70% at 85% 30%, #f27a1a22 0%, transparent 65%);
+  overflow: hidden;
 }
 
-:is(.dark *) .hero-background,
-.dark .hero-background {
-  background-image:
-    radial-gradient(ellipse 60% 80% at 15% 60%, #e8e2f418 0%, transparent 70%),
-    radial-gradient(ellipse 50% 70% at 85% 30%, #f27a1a22 0%, transparent 65%);
+.hero-background::before,
+.hero-background::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* Violet glow — left/lower */
+.hero-background::before {
+  width: 60%;
+  height: 80%;
+  top: 20%;
+  left: -15%;
+  background: radial-gradient(circle, #7e3ff280 0%, transparent 60%);
+  filter: blur(80px);
+  animation: hero-breathe 10s ease-in-out infinite;
+}
+
+/* Brand orange glow — right/upper */
+.hero-background::after {
+  width: 50%;
+  height: 70%;
+  top: -10%;
+  right: -10%;
+  background: radial-gradient(circle, #f27a1a22 0%, transparent 60%);
+  filter: blur(60px);
+  animation: hero-breathe 12s ease-in-out infinite reverse;
+}
+
+@keyframes hero-breathe {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-background::before,
+  .hero-background::after {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* Dark mode swaps the violet for pale lavender; orange stays */
+:is(.dark *) .hero-background::before,
+.dark .hero-background::before {
+  background: radial-gradient(circle, #e8e2f418 0%, transparent 60%);
 }
 
 .brand-radial {
