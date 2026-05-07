@@ -8,7 +8,6 @@ import { MessageList } from "@/components/chat/MessageList";
 import { ConversationSkeleton } from "@/components/chat/ConversationSkeleton";
 import InputBar from "./InputBar";
 import DemoControls from "./DemoControls";
-import UpgradeModal from "./UpgradeModal";
 
 export default function DashboardChat() {
   const messages = useChatStore((s) => s.messages);
@@ -50,7 +49,6 @@ export default function DashboardChat() {
   return (
     <>
       <DemoControls />
-      <UpgradeModal />
       {!showConversation ? (
         <div className="flex-1 flex flex-col items-center justify-center px-[10px] py-10 gap-10 min-h-[calc(100vh-78px)]">
           <Typography variant="display-section" className="text-primary">

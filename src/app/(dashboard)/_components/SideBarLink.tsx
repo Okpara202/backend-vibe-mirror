@@ -18,7 +18,7 @@ const links = [
   {
     icon: ChatSvgIcon,
     name: "Chat",
-    href: "#",
+    href: "/chat",
   },
   {
     icon: SearchIconSvg,
@@ -28,7 +28,7 @@ const links = [
   {
     icon: ProjectIconSvg,
     name: "Projects",
-    href: "#",
+    href: "/projects",
   },
 ];
 

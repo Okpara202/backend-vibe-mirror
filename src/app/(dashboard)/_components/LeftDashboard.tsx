@@ -1,8 +1,8 @@
 import VibeCraftLogo from "@/components/ui/Logo";
-import { ToggleLeftSideBar } from "./LeftDashboardSvgIcons";
 import OwnersDetails from "./OwnersDetails";
 import SideBarLink from "./SideBarLink";
 import Recents from "./Recents";
+import SidebarCollapseToggle from "./SidebarCollapseToggle";
 import UpgradeProBadge from "./UpgradeProBadge";
 
 export default function LeftDashboard() {
@@ -10,7 +10,7 @@ export default function LeftDashboard() {
     <div className="flex flex-col h-full">
       <div className="border-b border-default h-[78px] px-6 flex items-center justify-between shrink-0">
         <VibeCraftLogo />
-        <ToggleLeftSideBar className="text-icon-secondary" />
+        <SidebarCollapseToggle />
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 flex flex-col gap-8 py-8">

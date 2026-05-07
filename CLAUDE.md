@@ -1,6 +1,6 @@
 # CLAUDE.md — VibeCraft Frontend
 
-### Last updated: 2026-05-04
+### Last updated: 2026-05-07
 
 This file is the single source of truth for all frontend work on VibeCraft.
 Read it fully at the start of every session before writing any code.
@@ -23,8 +23,11 @@ You are the AI coding assistant for the VibeCraft frontend — a Next.js 16 (App
    - `src/app/globals.css` — all CSS variables and tokens
    - `src/components/ui/Typography.tsx` — every variant name exactly as written
    - `src/components/ui/button.tsx` — two variants only, asChild pattern
-   - `src/app/(dashboard)/dashboard/_components/DashboardChat.tsx` — client wrapper
-   - `src/app/(dashboard)/dashboard/_components/LeftDashboardSvgIcons.tsx` — dashboard icons
+   - `src/components/ui/Input.tsx` / `TextArea.tsx` — RHF-compatible form primitives
+   - `src/app/(dashboard)/layout.tsx` — route-group shell, sidebar collapse logic
+   - `src/app/(dashboard)/dashboard/_components/DashboardChat.tsx` — dashboard-page client wrapper
+   - `src/app/(dashboard)/_components/LeftDashboardSvgIcons.tsx` — shared sidebar/header icons
+   - `src/store/ui-store.ts` — `mobileSidebarOpen`, `desktopSidebarCollapsed`, `upgradeModalOpen`
    - Any file you are about to modify — always read before writing
 
 2. **Check the build order table (section 10)** to know what's done and what's next.
@@ -127,6 +130,18 @@ Two variants only: `default` (orange fill) and `outline` (bordered neutral).
 </Button>
 ```
 
+### Form primitives
+
+`Input` (`src/components/ui/Input.tsx`) and `TextArea` (`src/components/ui/TextArea.tsx`) are the RHF-compatible primitives. Both:
+
+- Use `forwardRef` so `register()` from react-hook-form attaches its ref directly.
+- Accept `label`, `placeholder`, `error: FieldError`, `className`, plus all native input/textarea attributes.
+- Auto-derive `id` from the label (lowercased, spaces → dashes) for `htmlFor` if no `id` is provided.
+- Share the same border/focus/error visuals: `border-[0.5px] border-border-default`, `focus:border-[#F27A1A]`, error red `#D93B3B`.
+- `TextArea` adds `rows={5}` default, `resize-y`, and `min-h-[125px]` so the user cannot shrink below 5 rows of `text-sm leading-5` content.
+
+Use these — never raw `<input>` / `<textarea>`.
+
 ### Icons
 
 - Dashboard icons → `LeftDashboardSvgIcons.tsx`
@@ -147,32 +162,75 @@ Two variants only: `default` (orange fill) and `outline` (bordered neutral).
 src/app/(marketplace)/**    ← read-only. You may IMPORT from here, never modify
 src/app/(auth)/**           ← read-only
 src/app/globals.css         ← only modify with explicit user instruction
-src/components/ui/**        ← design system primitives, do not modify
+src/components/ui/**        ← do not modify existing primitives. Adding NEW primitives is OK only when explicitly authorized
 src/lib/utils.ts            ← do not modify
 ```
 
 `HeroTextArea.tsx` is the one marketplace file that's been replaced (step 21) — it now mounts the shared `ChatComposer`. All other marketplace files remain read-only.
 
-### Dashboard — built, do not recreate
+### UI primitives — `src/components/ui/`
 
 ```
-src/app/(dashboard)/dashboard/
-├── layout.tsx                        ✅ responsive two-column shell
-├── page.tsx                          ✅ server component → DashboardChat
-└── _components/
-    ├── DashboardChat.tsx             ✅ client wrapper, mode switching
-    ├── DemoControls.tsx              ✅ DEV ONLY — delete before launch
-    ├── InputBar.tsx                  ✅ thin shell — picks new vs conversation, mounts ChatComposer
-    ├── LeftDashboard.tsx             ✅ sidebar shell
-    ├── LeftDashboardSvgIcons.tsx     ✅ all dashboard SVG icons — import from here
-    ├── MobileSidebarDrawer.tsx       ✅ <lg slide-in drawer
-    ├── OwnersDetails.tsx             ✅ click-to-open dropdown
-    ├── Recents.tsx                   ✅ wired to conversations-store
-    ├── RightHeader.tsx               ✅ wired to chat-store + ui-store
-    ├── SideBarLink.tsx               ✅ active-aware nav
-    ├── UpgradeModal.tsx              ✅ full-screen dialog wrapping Pricing
-    └── UpgradeProBadge.tsx           ✅ sidebar CTA wrapper
+src/components/ui/
+├── button.tsx              ✅ two variants (default / outline) + asChild
+├── ChatPageBackground.tsx  ✅ decorative SVG/gradient backdrop
+├── DotTextTag.tsx          ✅ pill with leading colored dot — used by RightHeader for creation-type tag
+├── Input.tsx               ✅ RHF-compatible text input (see section 2 — Form primitives)
+├── Logo.tsx                ✅ VibeCraft brand mark
+├── NavLinks.tsx            ✅ marketplace header nav links
+├── TextArea.tsx            ✅ RHF-compatible textarea, min 5 rows (added 2026-05-07)
+├── ThemeToggle.tsx         ✅ light/dark switcher (uses ThemeProvider)
+├── tier-gate.tsx           ✅ <TierGate> + <UpgradePrompt> — section 14
+└── Typography.tsx          ✅ all text. Never raw <h1>/<p>/<span>.
 ```
+
+### Theme provider
+
+```
+src/providers/ThemeProvider.tsx   ← wraps the app in src/app/layout.tsx (root layout)
+```
+
+### Dashboard route group — built, do not recreate
+
+The `(dashboard)` route group has a lifted layout that wraps every route inside it (`/dashboard`, `/chat`, future routes). Layout-level shared UI lives in `(dashboard)/_components/`. Page-scoped UI lives in the per-route `_components/` folder.
+
+```
+src/app/(dashboard)/
+├── layout.tsx                        ✅ route-group shell (client) — conditionally renders desktop aside based on desktopSidebarCollapsed
+├── _components/                      ✅ SHARED layout-level UI (mounted by layout)
+│   ├── ChatProjectsHeader.tsx        ✅ shared title-row used by /chat and /projects (responsive: stacks on <sm)
+│   ├── LeftDashboard.tsx             ✅ sidebar shell
+│   ├── LeftDashboardSvgIcons.tsx     ✅ all sidebar/header SVG icons — import from here
+│   ├── MobileSidebarDrawer.tsx       ✅ <lg slide-in drawer
+│   ├── MobileSidebarTrigger.tsx      ✅ fixed top-left ToggleLeftSideBar button — opens drawer <lg, expands sidebar lg+ when collapsed
+│   ├── OwnersDetails.tsx             ✅ click-to-open dropdown
+│   ├── Recents.tsx                   ✅ wired to conversations-store
+│   ├── SideBarLink.tsx               ✅ active-aware nav (Home / Chat / Search / Projects)
+│   ├── SidebarCollapseToggle.tsx     ✅ ToggleLeftSideBar inside LeftDashboard's top bar — closes drawer <lg, collapses sidebar lg+
+│   ├── UpgradeModal.tsx              ✅ full-screen dialog wrapping Pricing — mounted in layout, opened via ui-store
+│   └── UpgradeProBadge.tsx           ✅ sidebar CTA wrapper
+├── chat/
+│   ├── _components/
+│   │   └── ChatHistory.tsx           ✅ static chat list (mock data — TODO wire to backend)
+│   └── page.tsx                      ✅ chat list — uses ChatProjectsHeader + ChatHistory
+├── new-project/
+│   └── page.tsx                      ✅ create-project form — Input + TextArea + Cancel/Create buttons
+├── projects/
+│   ├── _components/
+│   │   └── ProjectHistory.tsx        ✅ static project grid (mock data — TODO wire to backend)
+│   └── page.tsx                      ✅ projects list — uses ChatProjectsHeader + ProjectHistory
+└── dashboard/
+    ├── page.tsx                      ✅ renders RightHeader + DashboardChat
+    └── _components/                  ✅ DASHBOARD-PAGE-ONLY UI
+        ├── DashboardChat.tsx         ✅ client wrapper, mode switching
+        ├── DemoControls.tsx          ✅ DEV ONLY — delete before launch
+        ├── InputBar.tsx              ✅ thin shell — picks new vs conversation, mounts ChatComposer
+        └── RightHeader.tsx           ✅ page header (chat title + type tag) — dashboard route only; mobile-trigger lives in shared layout, not here
+```
+
+**Why RightHeader sits here, not in the shared `_components/`:** the chat title + creation-type tag + mobile hamburger only make sense on the `/dashboard` chat surface. `/chat` (and future routes) render their own header. RightHeader's import for `LeftDashboardSvgIcons` reaches up two levels to `../../_components/LeftDashboardSvgIcons`.
+
+**UpgradeModal:** opened via `useUIStore.setUpgradeModalOpen(true)` from anywhere (sidebar `UpgradeProBadge`, `OwnersDetails`, `TierGate`'s `UpgradePrompt`). Mounted ONCE in the route-group layout so every route inside `(dashboard)` can open it.
 
 ### Shared chat input — built, do not recreate
 
@@ -196,7 +254,7 @@ src/store/
 ├── auth-store.ts           ✅ user, tier, tokenBalance, referralEarnings
 ├── chat-store.ts           ✅ messages, status, isLoadingMessages, planMode, selectedType
 ├── conversations-store.ts  ✅ list, fetchAll stub, addToList (deduped), removeLocal
-└── ui-store.ts             ✅ mobileSidebarOpen, upgradeModalOpen
+└── ui-store.ts             ✅ mobileSidebarOpen, desktopSidebarCollapsed, upgradeModalOpen
                                hook name is useUIStore (uppercase UI)
 ```
 
@@ -604,6 +662,8 @@ A11y: Tab into PreviewPanel → focus trapped · ESC closes PreviewPanel and Mob
 | 21   | Shared ChatComposer + marketplace flow                   | ✅ done — notes in section 12     |
 | 22   | TextRenderer — syntax highlighting + markdown formatting | ✅ done — notes in section 13     |
 | 23   | TierGate component                                       | ✅ done — notes in section 14     |
+| 24   | Lifted dashboard layout + `_components/` split + chat route stub | ✅ done — notes in section 15 |
+| 25   | `/chat`, `/projects`, `/new-project` pages + sidebar collapse on lg+ | ✅ done — notes in section 16 |
 | —    | Middleware                                               | ⏸ backend dependency              |
 | —    | Streaming renderer                                       | ⏸ backend dependency              |
 | —    | Completion ping                                          | ⏸ backend dependency              |
@@ -739,3 +799,79 @@ User hits locked feature
   → UpgradeModal opens (Pricing component)
   → User selects plan → payment (Week 8)
 ```
+
+---
+
+## 15. NOTES — Lifted dashboard layout + `_components/` split (step 24)
+
+**Status: ✅ implemented on `feat/chat`.** The previous `(dashboard)/dashboard/layout.tsx` was lifted to `(dashboard)/layout.tsx` so a single shell wraps every route in the group (`/dashboard`, `/chat`, future routes). Old layout file deleted.
+
+### What moved where
+
+Layout-level shared UI moved from `(dashboard)/dashboard/_components/` → `(dashboard)/_components/`:
+
+- `LeftDashboard`, `MobileSidebarDrawer` — directly mounted by the route-group layout
+- `LeftDashboardSvgIcons`, `OwnersDetails`, `SideBarLink`, `Recents`, `UpgradeProBadge` — sidebar internals
+- `UpgradeModal` — opened via `useUIStore` from anywhere in the group; mounted ONCE in the layout (previously mounted inside `DashboardChat`, which meant `/chat` couldn't open it)
+
+Page-scoped UI stayed in `(dashboard)/dashboard/_components/`:
+
+- `DashboardChat`, `InputBar`, `DemoControls`
+- `RightHeader` — kept dashboard-page-only on purpose. The chat-title + creation-type tag + mobile hamburger only make sense on `/dashboard`. Now rendered by `dashboard/page.tsx` above `<DashboardChat />`, not by the layout. Its `LeftDashboardSvgIcons` import reaches up two levels: `../../_components/LeftDashboardSvgIcons`.
+
+### Mobile sidebar trigger — resolved (2026-05-07)
+
+`RightHeader` no longer owns the mobile sidebar trigger. A shared `MobileSidebarTrigger` lives in `(dashboard)/_components/` and is mounted in the route-group layout, so every dashboard route gets it on mobile.
+
+- `fixed top-7 left-4 z-30` — sits at the top-left corner of the viewport, aligned vertically with the 78px header band on `/dashboard`. On routes without a header (e.g. `/chat`), it floats over `bg-canvas` at the same position. `z-30` is below `MobileSidebarDrawer`'s backdrop (`z-40`) and panel (`z-50`), so the drawer cleanly covers it when open.
+- Uses the existing `ToggleLeftSideBar` icon from `LeftDashboardSvgIcons` (replacing the lucide `Menu` hamburger).
+- Visibility: always on `<lg`; on `lg+` only when `desktopSidebarCollapsed` (extended in step 25 — see section 16).
+- `RightHeader`'s padding adapts to the trigger's visibility — see section 16.
+
+The `ToggleLeftSideBar` icon already shown inside `LeftDashboard`'s top bar is now wired via `SidebarCollapseToggle` — see section 16.
+
+### `chat/page.tsx`
+
+No longer a stub — see section 16.
+
+---
+
+## 16. NOTES — `/chat`, `/projects`, `/new-project` + sidebar collapse on lg+ (step 25)
+
+**Status: ✅ implemented on `feat/chat`.**
+
+### New routes
+
+All three live inside `(dashboard)/` so they share the route-group layout (sidebar + drawer + mobile trigger + UpgradeModal):
+
+- **`/chat`** — list view of past chats. Renders shared `ChatProjectsHeader` (title row + search input) above `chat/_components/ChatHistory.tsx` (single-column list, mock data).
+- **`/projects`** — list view of projects. Same header, with `projects/_components/ProjectHistory.tsx` (responsive grid: `grid-cols-1 sm:grid-cols-2`, mock data).
+- **`/new-project`** — create-project form: `Input` for project name, `TextArea` for description, Cancel/Create buttons. Uses the shared `<TextArea>` primitive (matches `<Input>` styling; min 5 rows via `rows={5}` + `min-h-[125px]`).
+
+### Page wrappers — responsive top padding
+
+All three page sections use `pt-20 pb-10 lg:py-10 w-[90%] mx-auto max-w-{3xl|xl} space-y-5`. The `pt-20` reserves vertical room on `<lg` so the fixed `MobileSidebarTrigger` (top-7 left-4) doesn't collide with the page title; `lg:py-10` reverts to normal padding once the sidebar is expanded and the trigger is hidden.
+
+### `ChatProjectsHeader` — responsive title row
+
+Title + "New …" button stack on `<sm` (`flex flex-col gap-4`), side-by-side on `sm+` (`sm:flex-row sm:justify-between sm:items-center`). Button is `w-full sm:w-auto` so it spans the column on small screens.
+
+### Sidebar collapse on lg+
+
+New ui-store field `desktopSidebarCollapsed: boolean` (default `false`). Two interaction surfaces:
+
+- **`SidebarCollapseToggle`** (inside `LeftDashboard`'s top bar, replaces the previously decorative `<ToggleLeftSideBar />`) — onClick fires both `setMobileSidebarOpen(false)` and `setDesktopSidebarCollapsed(true)`. The first applies on `<lg` (closes the drawer), the second on `lg+` (collapses the desktop aside). Whichever is active at the current viewport takes effect; the other is a no-op.
+- **`MobileSidebarTrigger`** (fixed top-left) — onClick fires `setMobileSidebarOpen(true)` + `setDesktopSidebarCollapsed(false)`. Visibility: always on `<lg`; on `lg+` only when collapsed (`!desktopSidebarCollapsed && "lg:hidden"`).
+
+The pattern of firing both setters from one handler avoids reading viewport size in JS — the CSS responsive classes already gate which sidebar is "active," so only the relevant state change has visual effect.
+
+### Layout changes
+
+`(dashboard)/layout.tsx` is now a client component (it reads `desktopSidebarCollapsed`). Two conditional classes:
+
+- Desktop aside: `hidden` at base; adds `lg:block lg:basis-[23%]` only when not collapsed.
+- Right aside (content): drops `lg:border-l` when collapsed (no left edge to border against).
+
+### `RightHeader` padding
+
+Adapts to whether the floating trigger is visible: `pl-12 pr-4` on `<lg` (always), and `lg:pl-12 lg:pr-6` when `desktopSidebarCollapsed`, otherwise `lg:px-6`. Without this, the chat title would slide under the trigger on lg+ collapsed.
