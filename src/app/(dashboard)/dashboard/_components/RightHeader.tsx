@@ -1,13 +1,17 @@
 "use client";
 
-import { Menu } from "lucide-react";
 import DotTextTag from "@/components/ui/DotTextTag";
 import { Typography } from "@/components/ui/Typography";
+import { cn } from "@/lib/utils";
 import { useChatStore } from "@/store/chat-store";
 import { useConversationsStore } from "@/store/conversations-store";
 import { useUIStore } from "@/store/ui-store";
 import type { CreationType, Message, UserMessage } from "@/types";
-import { CodeTagIcon, GlobeIcon, PaperIcon } from "./LeftDashboardSvgIcons";
+import {
+  CodeTagIcon,
+  GlobeIcon,
+  PaperIcon,
+} from "../../_components/LeftDashboardSvgIcons";
 
 const TYPE_LABEL: Record<CreationType, string> = {
   website: "Website",
@@ -59,7 +63,9 @@ export default function RightHeader() {
   const selectedType = useChatStore((s) => s.selectedType);
   const activeId = useChatStore((s) => s.activeConversationId);
   const list = useConversationsStore((s) => s.list);
-  const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
+  const desktopSidebarCollapsed = useUIStore(
+    (s) => s.desktopSidebarCollapsed,
+  );
 
   const activeConv = activeId
     ? list.find((c) => c.id === activeId)
@@ -70,16 +76,14 @@ export default function RightHeader() {
   const type = deriveType(messages, selectedType);
 
   return (
-    <div className="bg-sidebar-fill border-b border-default px-4 lg:px-6 h-[78px] flex items-center justify-between gap-3">
+    <div
+      className={cn(
+        "bg-sidebar-fill border-b border-default h-[78px] flex items-center justify-between gap-3",
+        "pl-12 pr-4",
+        desktopSidebarCollapsed ? "lg:pl-12 lg:pr-6" : "lg:px-6",
+      )}
+    >
       <aside className="flex items-center gap-3 min-w-0 flex-1">
-        <button
-          type="button"
-          aria-label="Open sidebar"
-          onClick={() => setMobileSidebarOpen(true)}
-          className="lg:hidden text-icon-secondary hover:text-primary p-1.5 -ml-1.5 cursor-pointer shrink-0"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
         <Typography variant="body-sm" className="text-secondary truncate">
           {title}
         </Typography>

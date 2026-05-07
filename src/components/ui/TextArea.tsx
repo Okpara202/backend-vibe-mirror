@@ -6,32 +6,29 @@ import { cn } from "@/lib/utils";
 // Types
 // ─────────────────────────────────────────────
 
-type InputProps = {
+type TextAreaProps = {
   label?: string;
   placeholder?: string;
   error?: FieldError;
   className?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 // ─────────────────────────────────────────────
 // Component
-// forwardRef allows RHF to attach its ref to the input
+// forwardRef allows RHF to attach its ref to the textarea
 // ─────────────────────────────────────────────
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    { label, placeholder, error, className, id, type = "text", ...props },
-    ref,
-  ) => {
+const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
+  ({ label, placeholder, error, className, id, rows = 5, ...props }, ref) => {
     // Use provided id or fall back to label-based id for htmlFor to work
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+    const textareaId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
 
     return (
       <div className="flex flex-col gap-4 w-full">
         {/* Label */}
         {label && (
           <label
-            htmlFor={inputId}
+            htmlFor={textareaId}
             className={cn(
               "font-sans font-medium text-[14px] leading-5 tracking-[0%]",
               error ? "text-[#D93B3B]" : "text-secondary",
@@ -41,11 +38,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
 
-        {/* Input */}
-        <input
-          id={inputId}
+        {/* Textarea */}
+        <textarea
+          id={textareaId}
           ref={ref}
-          type={type}
+          rows={rows}
           placeholder={placeholder}
           className={cn(
             // Base styles
@@ -53,6 +50,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             "font-sans font-medium text-sm leading-5 tracking-[0%]",
             "text-muted",
             "outline-none transition-all",
+
+            // Resize — vertical only, never below the rows-defined minimum
+            "resize-y min-h-[125px]",
 
             // Border — 0.5px, color token (update in global.css later)
             "border-[0.5px] border-border-default",
@@ -79,6 +79,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-Input.displayName = "Input";
+TextArea.displayName = "TextArea";
 
-export { Input };
+export { TextArea };
