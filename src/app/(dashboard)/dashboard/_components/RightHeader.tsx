@@ -12,6 +12,7 @@ import {
   GlobeIcon,
   PaperIcon,
 } from "../../_components/LeftDashboardSvgIcons";
+import ProjectBreadcrumb from "./ProjectBreadcrumb";
 
 const TYPE_LABEL: Record<CreationType, string> = {
   website: "Website",
@@ -66,6 +67,7 @@ export default function RightHeader() {
   const desktopSidebarCollapsed = useUIStore(
     (s) => s.desktopSidebarCollapsed,
   );
+  const activeProjectId = useUIStore((s) => s.activeProjectId);
 
   const activeConv = activeId
     ? list.find((c) => c.id === activeId)
@@ -84,6 +86,7 @@ export default function RightHeader() {
       )}
     >
       <aside className="flex items-center gap-3 min-w-0 flex-1">
+        {activeProjectId && <ProjectBreadcrumb projectId={activeProjectId} />}
         <Typography variant="body-sm" className="text-secondary truncate">
           {title}
         </Typography>

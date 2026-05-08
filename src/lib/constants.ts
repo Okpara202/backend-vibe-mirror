@@ -51,20 +51,31 @@ export const SUCCESS_MESSAGES: Record<
 
 // ── Tier features ──────────────────────────────────────────────────────
 // UI-side feature flags. Backend enforces real access control.
+//
+// `maxProjects: -1` = unlimited. Project gating is count-based — use the
+// `canCreateProject()` helper in src/lib/project-utils.ts, NOT TierGate.
+// `hasProjectContext`: AI remembers brand/style across chats inside a
+// project (Beginner+ only).
 export const TIER_FEATURES = {
   free: {
     canUseBuildAgent: false,
     canUseAutonomousAgent: false,
     canAccessMonetisation: false,
+    maxProjects: 1,
+    hasProjectContext: false,
   },
   beginner: {
     canUseBuildAgent: true,
     canUseAutonomousAgent: false,
     canAccessMonetisation: false,
+    maxProjects: 5,
+    hasProjectContext: true,
   },
   pro: {
     canUseBuildAgent: true,
     canUseAutonomousAgent: true,
     canAccessMonetisation: true,
+    maxProjects: -1,
+    hasProjectContext: true,
   },
-} as const satisfies Record<Tier, Record<string, boolean>>;
+} as const satisfies Record<Tier, Record<string, boolean | number>>;

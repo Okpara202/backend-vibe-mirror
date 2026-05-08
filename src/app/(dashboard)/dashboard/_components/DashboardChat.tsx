@@ -9,12 +9,38 @@ import { ConversationSkeleton } from "@/components/chat/ConversationSkeleton";
 import InputBar from "./InputBar";
 import DemoControls from "./DemoControls";
 
-export default function DashboardChat() {
+interface DashboardChatProps {
+  /** Set when this chat is scoped inside a project (`/projects/:id/chat/:chatId`).
+   *  Forwarded to the AI generate call so backend can attach project context. */
+  projectId?: string;
+  /** Conversation id for project-scoped routes. When present we trigger
+   *  `loadConversation` on mount; absent → behaves as a global new chat. */
+  chatId?: string;
+}
+
+export default function DashboardChat({
+  projectId,
+  chatId,
+}: DashboardChatProps = {}) {
   const messages = useChatStore((s) => s.messages);
   const isLoadingMessages = useChatStore((s) => s.isLoadingMessages);
   const addMessage = useChatStore((s) => s.addMessage);
   const setSelectedType = useChatStore((s) => s.setSelectedType);
+  const setProjectId = useChatStore((s) => s.setProjectId);
+  const loadConversation = useChatStore((s) => s.loadConversation);
   const userName = useAuthStore((s) => s.user?.name) ?? "there";
+
+  // Mirror the route's projectId into chat-store so generate-calls include
+  // it. Reset on unmount so leaving the project route returns to global mode.
+  useEffect(() => {
+    setProjectId(projectId ?? null);
+    return () => setProjectId(null);
+  }, [projectId, setProjectId]);
+
+  // Load the conversation when a chatId is supplied (project chat routes).
+  useEffect(() => {
+    if (chatId) loadConversation(chatId);
+  }, [chatId, loadConversation]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

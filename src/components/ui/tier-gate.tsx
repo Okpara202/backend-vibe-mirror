@@ -6,7 +6,14 @@ import { TIER_FEATURES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/Typography";
 
-type Feature = keyof typeof TIER_FEATURES.free;
+// Only boolean feature flags belong to TierGate. Count-based gates (e.g.
+// `maxProjects`) use the `canCreateProject` helper instead — see
+// src/lib/project-utils.ts. This filter narrows the Feature type so the
+// non-boolean keys are caught at compile time.
+type BooleanKeys<T> = {
+  [K in keyof T]: T[K] extends boolean ? K : never;
+}[keyof T];
+type Feature = BooleanKeys<typeof TIER_FEATURES.free>;
 
 interface TierGateProps {
   feature: Feature;
