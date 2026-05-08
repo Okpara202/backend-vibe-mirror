@@ -1,6 +1,6 @@
 # CLAUDE.md — VibeCraft Frontend
 
-### Last updated: 2026-05-07
+### Last updated: 2026-05-08
 
 This file is the single source of truth for all frontend work on VibeCraft.
 Read it fully at the start of every session before writing any code.
@@ -375,11 +375,11 @@ InputBar new mode: `w-full max-w-[580px]`
 
 ### Voice input model
 
-Record → stop → transcribe. Never live-transcription. Transcript always appends to existing textarea value, never replaces. See section 14.
+Record → stop → transcribe. Never live-transcription. Transcript always appends to existing textarea value, never replaces. See section 11.
 
 ### Marketplace → dashboard flow
 
-Message is saved to `sessionStorage` on send. Dashboard reads it on mount and fires it automatically. Auth check via `useAuthStore`. See section 15.
+Message is saved to `sessionStorage` on send. Dashboard reads it on mount and fires it automatically. Auth check via `useAuthStore`. See section 12.
 
 ---
 
