@@ -11,6 +11,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   planMode: false,
   selectedType: null,
   isLoadingMessages: false,
+  projectId: null,
 
   loadConversation: async (id) => {
     set({ isLoadingMessages: true, messages: [], activeConversationId: id });
@@ -48,4 +49,5 @@ export const useChatStore = create<ChatStore>((set) => ({
   setError: (e) => set({ error: e, status: e ? "error" : "idle" }),
   togglePlanMode: () => set((s) => ({ planMode: !s.planMode })),
   setSelectedType: (t) => set({ selectedType: t }),
+  setProjectId: (id) => set({ projectId: id }),
 }));

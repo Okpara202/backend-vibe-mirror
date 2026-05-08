@@ -5,6 +5,7 @@ import { useUIStore } from "@/store/ui-store";
 import LeftDashboard from "./_components/LeftDashboard";
 import MobileSidebarDrawer from "./_components/MobileSidebarDrawer";
 import MobileSidebarTrigger from "./_components/MobileSidebarTrigger";
+import ProjectDevControls from "./_components/ProjectDevControls";
 import UpgradeModal from "./_components/UpgradeModal";
 
 export default function DashboardLayout({
@@ -37,6 +38,7 @@ export default function DashboardLayout({
         {children}
       </aside>
       <UpgradeModal />
+      <ProjectDevControls />
     </div>
   );
 }

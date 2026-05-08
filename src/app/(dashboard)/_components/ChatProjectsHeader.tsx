@@ -25,7 +25,7 @@ export default function ChatProjectsHeader({
   };
 
   const handleNewProject = () => {
-    router.push("/new-project");
+    router.push("/projects/new");
   };
   const chat = mode === "chat";
 
