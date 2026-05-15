@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/ui-store";
-import LeftDashboard from "./LeftDashboard";
 
-export default function MobileSidebarDrawer() {
+interface MobileSidebarDrawerProps {
+  children: ReactNode;
+}
+
+export default function MobileSidebarDrawer({
+  children,
+}: MobileSidebarDrawerProps) {
   const open = useUIStore((s) => s.mobileSidebarOpen);
   const setOpen = useUIStore((s) => s.setMobileSidebarOpen);
 
@@ -47,7 +52,7 @@ export default function MobileSidebarDrawer() {
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <LeftDashboard />
+        {children}
       </aside>
     </>
   );

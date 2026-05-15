@@ -98,7 +98,7 @@ function MenuItem({
       type="button"
       onClick={onClick}
       className={`block w-full text-left px-4 py-2 text-sm hover:bg-hover/60 ${
-        destructive ? "text-[#D93B3B]" : "text-primary"
+        destructive ? "text-destructive" : "text-primary"
       }`}
     >
       {label}

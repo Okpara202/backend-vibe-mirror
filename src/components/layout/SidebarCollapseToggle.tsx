@@ -1,7 +1,7 @@
 "use client";
 
 import { useUIStore } from "@/store/ui-store";
-import { ToggleLeftSideBar } from "./LeftDashboardSvgIcons";
+import { ToggleLeftSideBar } from "@/app/(user)/_components/LeftDashboardSvgIcons";
 
 export default function SidebarCollapseToggle() {
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
