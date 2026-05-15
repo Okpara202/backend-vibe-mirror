@@ -2,20 +2,16 @@
 
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/ui-store";
-import LeftDashboard from "./_components/LeftDashboard";
-import MobileSidebarDrawer from "./_components/MobileSidebarDrawer";
-import MobileSidebarTrigger from "./_components/MobileSidebarTrigger";
-import ProjectDevControls from "./_components/ProjectDevControls";
-import UpgradeModal from "./_components/UpgradeModal";
+import MobileSidebarDrawer from "@/components/layout/MobileSidebarDrawer";
+import MobileSidebarTrigger from "@/components/layout/MobileSidebarTrigger";
+import AdminDashboardLeftDashboard from "./_components/AdminDashboardLeftDashboard";
 
-export default function DashboardLayout({
+export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const desktopSidebarCollapsed = useUIStore(
-    (s) => s.desktopSidebarCollapsed,
-  );
+  const desktopSidebarCollapsed = useUIStore((s) => s.desktopSidebarCollapsed);
 
   return (
     <div className="flex">
@@ -25,9 +21,11 @@ export default function DashboardLayout({
           !desktopSidebarCollapsed && "lg:block lg:basis-[23%]",
         )}
       >
-        <LeftDashboard />
+        <AdminDashboardLeftDashboard />
       </aside>
-      <MobileSidebarDrawer />
+      <MobileSidebarDrawer>
+        <AdminDashboardLeftDashboard />
+      </MobileSidebarDrawer>
       <MobileSidebarTrigger />
       <aside
         className={cn(
@@ -37,8 +35,6 @@ export default function DashboardLayout({
       >
         {children}
       </aside>
-      <UpgradeModal />
-      <ProjectDevControls />
     </div>
   );
 }

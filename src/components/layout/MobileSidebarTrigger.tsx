@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/ui-store";
-import { ToggleLeftSideBar } from "./LeftDashboardSvgIcons";
+import { ToggleLeftSideBar } from "@/app/(user)/_components/LeftDashboardSvgIcons";
 
 export default function MobileSidebarTrigger() {
   const desktopSidebarCollapsed = useUIStore(

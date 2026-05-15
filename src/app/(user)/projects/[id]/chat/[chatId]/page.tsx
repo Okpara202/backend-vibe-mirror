@@ -1,5 +1,5 @@
-import DashboardChat from "@/app/(dashboard)/dashboard/_components/DashboardChat";
-import RightHeader from "@/app/(dashboard)/dashboard/_components/RightHeader";
+import DashboardChat from "@/app/(user)/dashboard/_components/DashboardChat";
+import RightHeader from "@/app/(user)/dashboard/_components/RightHeader";
 
 export default async function ProjectChatPage({
   params,

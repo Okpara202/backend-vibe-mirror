@@ -1,6 +1,6 @@
 # CLAUDE.md — VibeCraft Frontend
 
-### Last updated: 2026-05-08
+### Last updated: 2026-05-15
 
 This file is the single source of truth for all frontend work on VibeCraft.
 Read it fully at the start of every session before writing any code.
@@ -23,10 +23,9 @@ You are the AI coding assistant for the VibeCraft frontend — a Next.js 16 (App
    - `src/app/globals.css` — all CSS variables and tokens
    - `src/components/ui/Typography.tsx` — every variant name exactly as written
    - `src/components/ui/button.tsx` — two variants only, asChild pattern
-   - `src/components/ui/Input.tsx` / `TextArea.tsx` — RHF-compatible primitives
-   - `src/app/(dashboard)/layout.tsx` — route-group shell, sidebar collapse logic
-   - `src/app/(dashboard)/dashboard/_components/DashboardChat.tsx` — client wrapper (accepts projectId / chatId)
-   - `src/app/(dashboard)/_components/LeftDashboardSvgIcons.tsx` — shared sidebar/header icons
+   - `src/app/(user)/dashboard/_components/DashboardChat.tsx` — client wrapper (accepts projectId / chatId)
+   - `src/app/(user)/_components/LeftDashboardSvgIcons.tsx` — sidebar/header icons (also imported by `src/components/layout/` shared sidebar UI)
+   - `src/app/(admin)/layout.tsx` — admin route-group shell (same sidebar pattern as user)
    - `src/store/ui-store.ts` — sidebar + project + modal state lives here
    - Any file you are about to modify — always read before writing
 
@@ -35,6 +34,11 @@ You are the AI coding assistant for the VibeCraft frontend — a Next.js 16 (App
 3. **Flag discrepancies.** If something in the codebase differs from this document — flag it, don't silently override either.
 
 4. **150-line hard ceiling per file.** If a new feature pushes a file over 150 lines, split it before reporting work as done. Patterns already in use: custom hooks for state/side-effects, child components for cohesive JSX blocks, sub-folders named after the parent (`input/`, `preview/`, `clarification/`). Run `wc -l` on every file you create or modify.
+
+   **Documented over-150 exceptions (do not split these):**
+   - `DemoControls.tsx` (422 lines) — DEV ONLY, deleted before launch
+   - `ChatPageBackground.tsx` (408 lines) — in `components/ui/**`, do not modify
+   - `LeftDashboardSvgIcons.tsx` (274 lines) — pure SVG icon barrel, splitting hurts DX
 
 ---
 
@@ -88,10 +92,12 @@ Use CSS tokens and Tailwind classes only. Two documented exceptions exist — se
 
 ⚠️ `bg-hover` is identical in light and dark. Text on `bg-hover` must use `text-brand` — never `text-primary`. Applies to: SuccessBanner, selected ClarificationForm options, InputBar focus states.
 
-**Only two hardcoded hex values permitted in the entire codebase:**
+**Hardcoded hex exceptions — only these are permitted:**
 
 - `bg-[#1e2a4a]` — dark navy chapter cards in ProgressCard (Figma spec)
 - `bg-[#1e1d1a]` — code panel background in PreviewPanel, TextRenderer, SyntaxHighlighter
+- **Recharts and inline SVG chart components** — CSS variables are not available inside SVG/canvas. Admin chart colors (`#F27A1A`, `#7E3FF2`, `#4ADE80`, `#D4860A`, `#7C5CBF`, `#2D9E6B`, `#E8A020`) and gradient rgba stops are permitted inside recharts component files only. Do not use these hex values outside chart files.
+- `text-[#D93B3B]` — destructive red in ProjectSettingsMenu delete option (use `text-destructive` everywhere else)
 
 ### Typography
 
@@ -156,83 +162,127 @@ src/lib/utils.ts            ← do not modify
 
 One permitted exception: `HeroTextArea.tsx` will be replaced by `ChatComposer` in step 21. All other marketplace files remain read-only.
 
-### Dashboard route group — built, do not recreate
+### Shared layout primitives — `src/components/layout/`
 
-The `(dashboard)/` route group has a lifted client layout that wraps every route inside it. Layout-level shared UI lives in `(dashboard)/_components/`. Page-scoped UI lives in the per-route `_components/` folder. `[id]/layout.tsx` flips ui-store into project mode for both `/projects/:id` and `/projects/:id/chat/:chatId`.
+Lowest-common-ancestor sidebar plumbing. Both `(user)` and `(admin)` layouts import from here; the drawer takes `children` so each route group passes its own sidebar.
 
 ```
-src/app/(dashboard)/
-├── layout.tsx                                  ✅ client shell — sidebar visibility, drawer, mobile trigger, UpgradeModal
-├── _components/                                ✅ SHARED layout-level UI
-│   ├── ChatProjectsHeader.tsx                  ✅ shared title-row used by /chat and /projects
-│   ├── LeftDashboard.tsx                       ✅ sidebar shell
+src/components/layout/
+├── MobileSidebarDrawer.tsx       ✅ <lg slide-in drawer — accepts `children`
+├── MobileSidebarTrigger.tsx      ✅ fixed top-left toggle — opens drawer / expands sidebar
+└── SidebarCollapseToggle.tsx     ✅ inside sidebar top bar — closes drawer / collapses sidebar
+```
+
+`ToggleLeftSideBar` icon still lives in `@/app/(user)/_components/LeftDashboardSvgIcons` — those three files import it from there.
+
+### (user) route group — built, do not recreate
+
+```
+src/app/(user)/
+├── layout.tsx                                  ✅ client shell — sidebar, drawer<LeftDashboard/>, trigger, UpgradeModal, ProjectDevControls
+├── _components/                                ✅ user-shared layout-level UI
+│   ├── ChatProjectsHeader.tsx                  ✅ shared title-row for /chat and /projects
+│   ├── LeftDashboard.tsx                       ✅ user sidebar shell
 │   ├── LeftDashboardSvgIcons.tsx               ✅ all sidebar/header SVG icons — import from here
-│   ├── MobileSidebarDrawer.tsx                 ✅ <lg slide-in drawer
-│   ├── MobileSidebarTrigger.tsx                ✅ fixed top-left ToggleLeftSideBar — opens drawer / expands sidebar
 │   ├── OwnersDetails.tsx                       ✅ click-to-open dropdown
 │   ├── ProjectDevControls.tsx                  🔧 DEV ONLY — seeds projects/conversations/tier
-│   ├── Recents.tsx                             ✅ two modes (global / project) via ui-store.sidebarMode
+│   ├── Recents.tsx                             ✅ two modes via ui-store.sidebarMode
 │   ├── SideBarLink.tsx                         ✅ active-aware nav (Home / Chat / Search / Projects)
-│   ├── SidebarCollapseToggle.tsx               ✅ ToggleLeftSideBar inside LeftDashboard top bar
-│   ├── UpgradeModal.tsx                        ✅ full-screen dialog wrapping Pricing — mounted by layout
+│   ├── UpgradeModal.tsx                        ✅ full-screen dialog wrapping Pricing
 │   ├── UpgradeProBadge.tsx                     ✅ sidebar CTA wrapper
-│   └── devSeeds.ts                             🔧 DEV ONLY — seed factories for ProjectDevControls
+│   └── devSeeds.ts                             🔧 DEV ONLY — seed factories
 ├── chat/
-│   ├── _components/ChatHistory.tsx             ✅ static chat list (mock — TODO wire to backend)
-│   └── page.tsx                                ✅ uses ChatProjectsHeader + ChatHistory
+│   ├── _components/ChatHistory.tsx             ✅ static chat list (mock)
+│   └── page.tsx                                ✅ ChatProjectsHeader + ChatHistory
 ├── dashboard/
-│   ├── page.tsx                                ✅ renders RightHeader + DashboardChat
+│   ├── page.tsx                                ✅ RightHeader + DashboardChat
 │   └── _components/
-│       ├── BreadcrumbDropdown.tsx              ✅ project-chevron dropdown content (chats + other projects)
-│       ├── DashboardChat.tsx                   ✅ accepts optional projectId / chatId props
+│       ├── BreadcrumbDropdown.tsx              ✅ project-chevron dropdown content
+│       ├── DashboardChat.tsx                   ✅ client wrapper, accepts projectId / chatId
 │       ├── DemoControls.tsx                    🔧 DEV ONLY — chat-state scenario tester
 │       ├── InputBar.tsx                        ✅ thin shell mounting ChatComposer
 │       ├── ProjectBreadcrumb.tsx               ✅ [Project name ˅ ›] when activeProjectId is set
-│       └── RightHeader.tsx                     ✅ chat title + type tag + breadcrumb (project mode only)
+│       └── RightHeader.tsx                     ✅ chat title + type tag + breadcrumb (project mode)
 └── projects/
-    ├── _components/ProjectHistory.tsx          ✅ reads project-store, links cards to /projects/:id
-    ├── page.tsx                                ✅ uses ChatProjectsHeader + ProjectHistory
+    ├── _components/ProjectHistory.tsx          ✅ reads project-store, links to /projects/:id
+    ├── page.tsx                                ✅ ChatProjectsHeader + ProjectHistory
     ├── new/page.tsx                            ✅ react-hook-form + canCreateProject gate
     └── [id]/
         ├── layout.tsx                          ✅ awaits params, mounts ProjectScope effect
         ├── page.tsx                            ✅ → ProjectHome(projectId)
         ├── chat/[chatId]/page.tsx              ✅ → RightHeader + DashboardChat(projectId, chatId)
         └── _components/
-            ├── CreationGrid.tsx                ✅ filters conversations-store by projectId; empty state
-            ├── DeleteProjectModal.tsx          ✅ confirmation modal with real project name + count
-            ├── InlineEditableText.tsx          ✅ click-to-edit; Enter commits, Escape cancels, blur commits
-            ├── ProjectHeader.tsx               ✅ title + desc inline-editable + new chat + settings
-            ├── ProjectHome.tsx                 ✅ orchestrator (project lookup, Free-tier nudge)
+            ├── CreationGrid.tsx                ✅ filters conversations-store by projectId
+            ├── DeleteProjectModal.tsx          ✅ confirmation modal
+            ├── InlineEditableText.tsx          ✅ click-to-edit
+            ├── ProjectHeader.tsx               ✅ title + desc inline-editable + settings
+            ├── ProjectHome.tsx                 ✅ orchestrator (lookup, Free-tier nudge)
             ├── ProjectScope.tsx                ✅ effect: setActiveProjectId + setSidebarMode("project")
-            └── ProjectSettingsMenu.tsx         ✅ rename / archive | unarchive / delete dropdown
+            └── ProjectSettingsMenu.tsx         ✅ rename / archive / delete dropdown
 ```
 
-**RightHeader is reused on both `/dashboard` and `/projects/:id/chat/:chatId`** even though its file lives in `dashboard/_components/`. The project chat page imports it via the `@/` alias. When `useUIStore.activeProjectId` is set (project routes only), RightHeader renders `ProjectBreadcrumb` ahead of the chat title; otherwise it renders the classic header.
+**RightHeader is reused** by `/dashboard` and `/projects/:id/chat/:chatId` — its file lives in `(user)/dashboard/_components/`; the project chat page imports it via the `@/` alias.
 
-**UpgradeModal:** mounted ONCE in the route-group layout. Opened via `useUIStore.setUpgradeModalOpen(true)` from anywhere — `UpgradeProBadge`, `OwnersDetails`, `TierGate`'s `UpgradePrompt`, `/projects/new` cap fallback, the Free-tier nudge inside `ProjectHome`.
+### (admin) route group — built, do not recreate
+
+`(admin)/layout.tsx` mirrors the user layout pattern; the mobile drawer receives `<AdminDashboardLeftDashboard/>` as children.
+
+```
+src/app/(admin)/
+├── layout.tsx                                  ✅ admin shell — sidebar, drawer<AdminDashboardLeftDashboard/>, trigger
+├── _components/
+│   ├── AdminDashboardLeftDashboard.tsx         ✅ admin sidebar shell
+│   ├── AdminSideNavLink.tsx                    ✅ admin nav links
+│   ├── AdminSvgIcons.tsx                       ✅ admin-specific SVG icons
+│   └── AdminTag.tsx                            ✅ "Admin" badge in sidebar footer
+└── admin-dashboard-overview/
+    ├── page.tsx                                ✅ "use client" — reads admin-store, useEffect → fetchOverview, error card, passes overview?.* props
+    └── _components/
+        ├── AdminCharts.tsx                     ✅ 2-col grid (Revenue + Funnel)
+        ├── AdminDashboardOverviewHeader.tsx    ✅ title + 24h/7d/30d/90d tabs wired to admin-store.period
+        ├── AdminDashboardSummary.tsx           ✅ 5 KPI cards — derives trend from AdminMetric (aiCostPerUser inverted)
+        ├── AdminDetailedSummary.tsx            ✅ 3-col grid (ProjectsByType / ReferralRevenue / LiveActivity)
+        ├── AdminOverviewIcons.tsx              ✅ back + notification icons
+        ├── AiGenerationChart.tsx               ✅ stacked bar chart — data prop accepts AdminChartPoint[]
+        ├── AiGenerationChartTooltip.tsx        ✅ split from AiGenerationChart (150-line ceiling)
+        ├── ConversionFunnel.tsx                ✅ funnel rows + tier breakdown
+        ├── LiveActivityCard.tsx                ✅ activity feed
+        ├── ProjectsByTypeCard.tsx              ✅ types breakdown + status counters
+        ├── RecentUserCard.tsx                  ✅ search + table — accepts users?: AdminUser[]
+        ├── RecentUsersPlanBadge.tsx            ✅ plan pill (tier not plan)
+        ├── RecentUsersTableRow.tsx             ✅ single <tr>
+        ├── recent-users.mock.ts                ✅ MOCK_USERS using canonical AdminUser from @/types/admin
+        ├── ReferralRevenueCard.tsx             ✅ tools list + avg per click
+        ├── RevenueChart.tsx                    ✅ composed area+line — data prop accepts AdminChartPoint[]
+        └── RevenueChartTooltip.tsx             ✅ split from RevenueChart
+```
+
+Mobile-responsive pattern: outer sections use `px-4 lg:px-8`; grids stack via `grid-cols-1 (sm/md/lg):grid-cols-N`; user table wraps in `overflow-x-auto` with `min-w-[720px]`.
 
 ### Shared chat input — after step 21 refactor
 
 ```
 src/components/chat/input/
-├── ChatComposer.tsx          ← new (step 21) — shared by marketplace + dashboard
-├── InputComposer.tsx         ← moved from dashboard/_components/input/
-├── InputActionsBar.tsx       ← moved
-├── TypePillSelector.tsx      ← moved
-├── AttachmentChips.tsx       ← moved
-├── VoiceWaveform.tsx         ← new (step 20)
-├── useAttachments.ts         ← moved
-└── useVoiceInput.ts          ← rewritten (step 20)
+├── ChatComposer.tsx          ✅ shared by marketplace + (user)/dashboard
+├── InputComposer.tsx         ✅ moved from (user)/dashboard/_components/input/
+├── InputActionsBar.tsx       ✅ moved
+├── TypePillSelector.tsx      ✅ moved
+├── AttachmentChips.tsx       ✅ moved
+├── VoiceWaveform.tsx         ✅ new (step 20)
+├── useAttachments.ts         ✅ moved
+├── useVoiceInput.ts          ✅ rewritten (step 20)
+└── speechRecognition.ts      ✅ Web Speech API helper extracted from useVoiceInput
 ```
 
 ### Stores — all built
 
 ```
 src/store/
+├── admin-store.ts          ✅ overview, period, isLoading, error, setPeriod, fetchOverview (stubbed)
 ├── auth-store.ts           ✅ user, tier, tokenBalance, referralEarnings
 ├── chat-store.ts           ✅ messages, status, isLoadingMessages, planMode, selectedType, projectId
-├── conversations-store.ts  ✅ list (ConversationMeta carries optional projectId), fetchAll stub, addToList (deduped), removeLocal
-├── project-store.ts        ✅ projects, activeProject, addProject / updateProject / removeProject / setProjects
+├── conversations-store.ts  ✅ list (ConversationMeta carries optional projectId), fetchAll stub
+├── project-store.ts        ✅ projects, activeProject, addProject / updateProject / removeProject
 └── ui-store.ts             ✅ mobileSidebarOpen, desktopSidebarCollapsed, upgradeModalOpen,
                                activeProjectId, sidebarMode ("global" | "project")
                                hook name is useUIStore (uppercase UI)
@@ -242,6 +292,8 @@ src/store/
 
 ```
 src/types/
+├── admin.ts      ✅ AdminPeriod, AdminMetric, AdminStats, AdminFunnel, AdminProjectsByType,
+│                    AdminReferralTool, AdminActivityEvent, AdminUser, AdminChartPoint, AdminOverviewData
 ├── message.ts    ✅ full discriminated union — User + Assistant + UserAttachment
 ├── project.ts    ✅ ProjectStatus, ProjectMeta, ProjectCreation
 ├── store.ts      ✅ all store interfaces, ConversationMeta with optional projectId
@@ -252,12 +304,14 @@ src/types/
 
 ```
 src/lib/
-├── api/index.ts        ✅ axios, withCredentials: true, 401 → /login
-├── constants.ts        ✅ REFERRAL_LINKS, SUCCESS_MESSAGES, TIER_LABELS, TIER_FEATURES (with maxProjects, hasProjectContext)
+├── api/
+│   ├── index.ts        ✅ axios, withCredentials: true, 401 → /login (named export `api`)
+│   └── admin.ts        ✅ getAdminOverview / getAdminUsers / getAdminProjects / getAdminRevenue
+├── constants.ts        ✅ REFERRAL_LINKS (#placeholders), SUCCESS_MESSAGES, TIER_FEATURES (with maxProjects, hasProjectContext)
 ├── project-utils.ts    ✅ canCreateProject(tier, count) — count-based gate, NOT a TierGate flag
 └── utils.ts            ✅ cn() — do not modify
 
-src/components/ui/tier-gate.tsx   ✅ TierGate + UpgradePrompt (Feature type filtered to boolean keys only)
+src/components/ui/tier-gate.tsx   ✅ TierGate + UpgradePrompt
 
 src/middleware.ts   ⏸ DEFERRED — needs backend cookie name
 ```
@@ -276,7 +330,7 @@ src/components/chat/
     ├── BookRenderer.tsx         ✅
     ├── ClarificationForm.tsx    ✅ post-submit lock
     ├── GameRenderer.tsx         ✅
-    ├── TextRenderer.tsx         ✅ react-markdown — update in step 22
+    ├── TextRenderer.tsx         ✅ react-markdown with syntax highlighting
     ├── WebsiteRenderer.tsx      ✅
     ├── clarification/
     │   └── ClarificationOptionCard.tsx  ✅
@@ -375,11 +429,11 @@ InputBar new mode: `w-full max-w-[580px]`
 
 ### Voice input model
 
-Record → stop → transcribe. Never live-transcription. Transcript always appends to existing textarea value, never replaces. See section 11.
+Record → stop → transcribe. Never live-transcription. Transcript always appends to existing textarea value, never replaces. See section 14.
 
 ### Marketplace → dashboard flow
 
-Message is saved to `sessionStorage` on send. Dashboard reads it on mount and fires it automatically. Auth check via `useAuthStore`. See section 12.
+Message is saved to `sessionStorage` on send. Dashboard reads it on mount and fires it automatically. Auth check via `useAuthStore`. See section 15.
 
 ---
 
@@ -507,7 +561,7 @@ export const SUCCESS_MESSAGES: Record<CreationType, {
   message: string
   subtext: (content: any) => string
 }> = {
-  book:    { message: "You made it. Nicely done",      subtext: (c) => `Your story is ready · ${c.chapters?.length ?? 0} chapters · ${c.pageCount ?? 0} pages` },
+  book:    { message: "You made it. Nicely done",      subtext: (c) => `Your bedtime story is ready · ${c.chapters?.length ?? 0} chapters · ${c.pageCount ?? 0} pages` },
   website: { message: "Your website is live",          subtext: (c) => `${c.pageCount ?? 0} pages · ${c.url}` },
   art:     { message: "Your poster is ready to print", subtext: (c) => c.formats?.join(" · ") ?? "" },
   game:    { message: "Your game is ready to play",    subtext: (_) => "" },
@@ -548,19 +602,17 @@ Currently: banner shows immediately on `status === "complete"`. Implement ping o
 
 ## 8. TESTING (no backend)
 
-Two floating dev panels (lg+ only):
+Use `DemoControls.tsx` — floating dropdown, visible only at lg+.
 
-- **`DemoControls.tsx`** (mounted in `DashboardChat`) — chat-state scenarios: Thinking / Text reply / Clarification (single) / Clarification (multi) / Book building / Book complete / Website building / Website complete / Art complete / Game complete / Error · Seed recents / Reset chat
-- **`ProjectDevControls.tsx`** (mounted in `(dashboard)/layout.tsx`) — project + tier + conversation seeders. **Set up demo** drops in 3 projects, 4 chats in the first project, 2 global chats, and tier=Pro in one click. Other actions: switch tier, fill Free/Beginner caps to test the `<UpgradePrompt>` path on `/projects/new`, seed chats in the first project, add a global chat, toggle archive on the first project, reset all.
+Scenarios: Thinking / Text reply / Clarification (single) / Clarification (multi) / Book building / Book complete / Website building / Website complete / Art complete / Game complete / Error
+
+Other: Seed recents / Reset chat
 
 Responsive: browser devtools at 375px / 768px / 1280px
 
-A11y: Tab into PreviewPanel → focus trapped · ESC closes PreviewPanel, MobileSidebarDrawer, UpgradeModal, DeleteProjectModal · Emulate prefers-reduced-motion → animations freeze
+A11y: Tab into PreviewPanel → focus trapped · ESC closes PreviewPanel and MobileSidebarDrawer · Emulate prefers-reduced-motion → animations freeze
 
-**Before launch — delete:**
-
-- `src/app/(dashboard)/dashboard/_components/DemoControls.tsx` + its import + `<DemoControls />` from `DashboardChat.tsx`
-- `src/app/(dashboard)/_components/ProjectDevControls.tsx` + `src/app/(dashboard)/_components/devSeeds.ts` + the import + `<ProjectDevControls />` from `(dashboard)/layout.tsx`
+**Before launch:** delete `DemoControls.tsx` + remove its import and `<DemoControls />` from `DashboardChat.tsx`.
 
 ---
 
@@ -579,22 +631,12 @@ A11y: Tab into PreviewPanel → focus trapped · ESC closes PreviewPanel, Mobile
 
 ### Open frontend tweaks (no backend needed)
 
-| Item                                | Notes                                                                                                                                                                                                                                                              |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Free-tier nudge granularity         | `ProjectHome`'s `FreeTierContextNudge` currently shows for every Free user on every project home. Spec wants "second or subsequent chat in this project" — needs a per-project conversation count signal we don't track yet. Tighten when that signal exists.   |
-| Status badge on `CreationCard`      | Spec calls for Published / Draft / Downloaded badges. `ConversationMeta` doesn't carry status; backend will provide it on `ProjectCreation`. The grid currently omits the badge.                                                                                |
-| Move RightHeader to shared          | Now imported by both `/dashboard` and `/projects/:id/chat/:chatId`. Currently lives in `dashboard/_components/` and the project chat page reaches for it via `@/` alias. Candidate to move into `(dashboard)/_components/` for cleaner ownership.                |
-| Voice transcription path            | See section 11. Pending product decision (Web Speech / Transformers.js / backend Whisper).                                                                                                                                                                       |
-
-### Blocked on backend (see also "Blocked on backend" table above)
-
-`useProjectStore` and `useConversationsStore` are in-memory only — reload wipes them. Wiring plan once the API lands:
-
-- `useConversationsStore.fetchAll` → `GET /conversations` (currently a no-op)
-- `useProjectStore.setProjects` ← `GET /projects` on app boot
-- `/projects/new` form ← additionally `POST /projects` before `addProject`
-- `ProjectCreation` (in `src/types/project.ts`, currently unused) becomes the wire format from a creations endpoint, replacing the `ConversationMeta`-filtered approach in `CreationGrid`
-- `chat-store.projectId` is already plumbed and forwarded — needs to be included in the generate-call payload when that exists
+| Item                           | Notes                                                                                                                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Free-tier nudge granularity    | `ProjectHome`'s `FreeTierContextNudge` currently shows for every Free user. Spec wants "second or subsequent chat in this project" — needs per-project conversation count signal. Tighten when that signal exists. |
+| Status badge on `CreationCard` | Spec calls for Published / Draft / Downloaded badges. `ConversationMeta` doesn't carry status; backend will provide it on `ProjectCreation`. Grid currently omits the badge.                                       |
+| Move RightHeader to shared     | Now imported by both `/dashboard` and `/projects/:id/chat/:chatId`. Currently lives in `(user)/dashboard/_components/`. Candidate to move into `(user)/_components/` for cleaner ownership.                        |
+| Voice transcription path       | See section 11. Pending product decision (Web Speech / Transformers.js / backend Whisper).                                                                                                                         |
 
 ### Known non-issues — do not fix
 
@@ -608,30 +650,40 @@ A11y: Tab into PreviewPanel → focus trapped · ESC closes PreviewPanel, Mobile
 
 ## 10. BUILD ORDER — CURRENT STATUS
 
-| #    | Step                                                    | Status                                                                   |
-| ---- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 1–16 | Layout, types, stores, renderers, wiring                | ✅ all done                                                              |
-| 17   | ConversationSkeleton wiring                             | ✅ done                                                                  |
-| 18   | OwnersDetails dropdown                                  | ✅ done                                                                  |
-| 19   | Upgrade modal                                           | ✅ done                                                                  |
-| 20   | Voice waveform + record-then-transcribe                 | 🔧 code shipped, mic broken — pending architecture decision (section 11) |
-| 21   | Shared ChatComposer + marketplace flow                  | ✅ done                                                                  |
-| 22   | TextRenderer — syntax highlighting + markdown           | ✅ done                                                                  |
-| 23   | TierGate component                                      | ✅ done                                                                  |
-| 24   | Lifted dashboard layout + route split                   | ✅ done                                                                  |
-| 25   | /chat, /projects, /new-project pages + sidebar collapse | ✅ done (static UI only)                                                 |
-| 26   | Project types + project-store + ui-store additions      | ✅ done                                                                   |
-| 27   | Rename /new-project → /projects/new + wire submit       | ✅ done                                                                   |
-| 28   | /projects/:id — project home view                       | ✅ done                                                                   |
-| 29   | /projects/:id/chat/:chatId — scoped chat route          | ✅ done                                                                   |
-| 30   | Recents.tsx two modes (global vs project-scoped)        | ✅ done                                                                   |
-| 31   | RightHeader.tsx breadcrumb mode                         | ✅ done                                                                   |
-| —    | Middleware                                              | ⏸ backend dependency                                                     |
-| —    | Wire projects to API                                    | ⏸ backend dependency (Week 5)                                            |
-| —    | Project context injection                               | ⏸ backend dependency (Week 7)                                            |
-| —    | Streaming renderer                                      | ⏸ backend dependency                                                     |
-| —    | Completion ping                                         | ⏸ backend dependency                                                     |
-| —    | Feedback API                                            | ⏸ backend dependency                                                     |
+| #     | Step                                                                                                  | Status                                                                                                                                                                                                                     |
+| ----- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–16  | Layout, types, stores, renderers, wiring                                                              | ✅ all done                                                                                                                                                                                                                |
+| 17    | ConversationSkeleton wiring                                                                           | ✅ done                                                                                                                                                                                                                    |
+| 18    | OwnersDetails dropdown                                                                                | ✅ done                                                                                                                                                                                                                    |
+| 19    | Upgrade modal                                                                                         | ✅ done                                                                                                                                                                                                                    |
+| 20    | Voice waveform + record-then-transcribe                                                               | 🔧 architecture correct — record→stop→onstop pipeline in place, Whisper TODO marker at swap point. Mic still fails silently on Brave / Firefox / Windows (no Web Speech support). Fully fixed when POST /transcribe lands. |
+| 21    | Shared ChatComposer + marketplace flow                                                                | ✅ done                                                                                                                                                                                                                    |
+| 22    | TextRenderer — syntax highlighting + markdown                                                         | ✅ done                                                                                                                                                                                                                    |
+| 23    | TierGate component                                                                                    | ✅ done                                                                                                                                                                                                                    |
+| 24    | Lifted dashboard layout + route split                                                                 | ✅ done                                                                                                                                                                                                                    |
+| 25    | /chat, /projects, /new-project pages + sidebar collapse                                               | ✅ done (static UI only)                                                                                                                                                                                                   |
+| 26    | Project types + project-store + ui-store additions                                                    | ✅ done                                                                                                                                                                                                                    |
+| 27    | Rename /new-project → /projects/new + wire submit                                                     | ✅ done                                                                                                                                                                                                                    |
+| 28    | /projects/:id — project home view                                                                     | ✅ done                                                                                                                                                                                                                    |
+| 29    | /projects/:id/chat/:chatId — scoped chat route                                                        | ✅ done                                                                                                                                                                                                                    |
+| 30    | Recents.tsx two modes (global vs project-scoped)                                                      | ✅ done                                                                                                                                                                                                                    |
+| 31    | RightHeader.tsx breadcrumb mode                                                                       | ✅ done                                                                                                                                                                                                                    |
+| 32–35 | (admin) route group + admin-dashboard-overview UI (responsive, file splits, lifted layout primitives) | ✅ done                                                                                                                                                                                                                    |
+| 36    | `src/types/admin.ts` (+ barrel re-export)                                                             | ✅ done                                                                                                                                                                                                                    |
+| 37    | `src/lib/api/admin.ts`                                                                                | ✅ done                                                                                                                                                                                                                    |
+| 38    | `src/store/admin-store.ts` — fetchOverview stubbed with TODO                                          | ✅ done                                                                                                                                                                                                                    |
+| 39    | Wire admin-dashboard-overview/page.tsx to admin-store                                                 | ✅ done                                                                                                                                                                                                                    |
+| 40    | Wire range tabs to period/setPeriod from admin-store                                                  | ✅ done                                                                                                                                                                                                                    |
+| 41    | Section components accept optional props with mock fallback                                           | ✅ done                                                                                                                                                                                                                    |
+| 42    | AdminDashboardSummary derives trend from AdminMetric.{current,previous}; aiCostPerUser inverted       | ✅ done                                                                                                                                                                                                                    |
+| —     | Middleware                                                                                            | ⏸ backend dependency                                                                                                                                                                                                       |
+| —     | Wire real admin API calls (uncomment getAdminOverview in admin-store)                                 | ⏸ backend dependency                                                                                                                                                                                                       |
+| —     | Wire projects to API                                                                                  | ⏸ backend dependency (Week 5)                                                                                                                                                                                              |
+| —     | Project context injection                                                                             | ⏸ backend dependency (Week 7)                                                                                                                                                                                              |
+| —     | Streaming renderer                                                                                    | ⏸ backend dependency                                                                                                                                                                                                       |
+| —     | Completion ping                                                                                       | ⏸ backend dependency                                                                                                                                                                                                       |
+| —     | Feedback API                                                                                          | ⏸ backend dependency                                                                                                                                                                                                       |
+| —     | Admin middleware role check                                                                           | ⏸ backend dependency (needs cookie name + role field)                                                                                                                                                                      |
 
 ---
 
@@ -661,6 +713,7 @@ A11y: Tab into PreviewPanel → focus trapped · ESC closes PreviewPanel, Mobile
 interface VoiceInputState {
   isRecording: boolean;
   analyser: AnalyserNode | null;
+  isSupported: boolean; // false on browsers without mediaDevices — hides mic button
   start: () => Promise<void>;
   stop: () => void;
   error: string | null;
@@ -749,7 +802,7 @@ Recording visual: `bg-brand text-white shadow-md` + two `animate-ping` rings (`b
 
 ### File moves — do these first
 
-Move from `src/app/(dashboard)/dashboard/_components/input/` to `src/components/chat/input/`:
+Move from `src/app/(user)/dashboard/_components/input/` to `src/components/chat/input/`:
 
 - `InputComposer.tsx`, `InputActionsBar.tsx`, `TypePillSelector.tsx`, `AttachmentChips.tsx`, `useAttachments.ts`, `useVoiceInput.ts`, `VoiceWaveform.tsx`
 
@@ -771,6 +824,8 @@ interface ChatComposerProps {
 ```
 
 ### `InputBar.tsx` (dashboard) becomes thin wrapper
+
+Note: actual file uses `export default function InputBar`. Same for `HeroTextArea.tsx`. Both work — the named-export samples below are illustrative.
 
 ```tsx
 "use client";
@@ -806,34 +861,31 @@ export function InputBar() {
 ### `HeroTextArea.tsx` (marketplace) — replace contents
 
 ```tsx
-"use client";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/auth-store";
-import { ChatComposer } from "@/components/chat/input/ChatComposer";
+"use client"
+import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/auth-store"
+import { ChatComposer } from "@/components/chat/input/ChatComposer"
 
 export function HeroTextArea() {
-  const router = useRouter();
-  const user = useAuthStore((s) => s.user);
+  const router = useRouter()
+  const user = useAuthStore((s) => s.user)
 
   const handleSend = (payload) => {
-    sessionStorage.setItem(
-      "vibecraft_pending_message",
-      JSON.stringify(payload),
-    );
+    sessionStorage.setItem("vibecraft_pending_message", JSON.stringify(payload))
     if (user) {
-      router.push("/dashboard");
+      router.push("/dashboard")
     } else {
-      router.push("/login?next=/dashboard");
+      router.push("/login?next=/dashboard")
     }
-  };
+  }
 
   return (
     <ChatComposer
       mode="new"
       onSend={handleSend}
-      placeholder="tell Vibecraft what you want..."
+      placeholder="Come Board, May we Vibe"   {/* actual placeholder — §12 sample was illustrative */}
     />
-  );
+  )
 }
 ```
 
@@ -1246,7 +1298,7 @@ Both sections navigate to the relevant `/projects/:id/chat/:chatId` or `/project
 
 ### Project home view — `/projects/:id`
 
-New page at `src/app/(dashboard)/projects/[id]/page.tsx`
+New page at `src/app/(user)/projects/[id]/page.tsx`
 
 Structure:
 
@@ -1277,7 +1329,7 @@ The "DeBee's Vibecraft" label + chevron in OwnersDetails IS the trigger for the 
 Shown as a subtle inline banner (not a modal) when a Free user opens a **second or subsequent chat** inside their one project. It is informational, not a hard block. The user can still proceed.
 
 ```tsx
-// src/app/(dashboard)/_components/ProjectContextBanner.tsx
+// src/app/(user)/_components/ProjectContextBanner.tsx
 // Only renders when: tier === "free" AND inside a project AND conversationCount > 0
 <div className="bg-hover border border-subtle rounded-xl px-4 py-3 flex items-center justify-between">
   <Typography variant="body-sm" className="text-secondary">
@@ -1301,3 +1353,432 @@ Both actions available from: project home settings dropdown (three-dot menu) and
 ### Rename
 
 Inline edit on the project title in the project home view (click title to edit). Also available from the settings dropdown. Description is also editable from both places.
+
+---
+
+## 17. ADMIN DASHBOARD — ARCHITECTURE
+
+### Decision log (2026-05-08)
+
+- **Same repo** — admin lives in `src/app/(admin)/` route group
+- **Internal TekAIDA team only** — not visible to customers
+- **Auth** — same JWT cookie as the main app. Kingsley must add `role: "user" | "admin"` to the JWT and to the `/auth/me` response. Middleware checks `role === "admin"` before allowing any `/admin` route. Non-admins are redirected to `/dashboard`.
+- **In scope for June 5 launch** — all four pages ship with the main product
+- **Division of work** — developer builds all UI components (layout, sidebar, stat cards, tables, page shells) using the existing design system. Claude Code handles: recharts chart components, admin store, API wiring, and connecting everything to the auth system.
+
+### Admin pages — four confirmed
+
+| Route               | Page               |
+| ------------------- | ------------------ |
+| `/admin`            | Dashboard Overview |
+| `/admin/moderation` | Project Moderation |
+| `/admin/users`      | User Management    |
+| `/admin/revenue`    | Revenue & Billing  |
+
+### File structure
+
+See section 3 — `(admin) route group` for the complete built file list. All files are ✅ done.
+
+### Admin store and types — canonical source
+
+Section 18 is the authoritative source for all admin types and store shape. Do not read this section for type definitions. Key points:
+
+- All KPI metrics use `AdminMetric { current: number; previous: number }` — never flat numbers
+- Trend % and direction are always derived on the frontend from `current` and `previous`
+- `aiCostPerUser` is the only inverted metric — lower is better
+- Store uses `period` (not `timeFilter`) and `setPeriod` (not `setTimeFilter`)
+- All type names are prefixed `Admin*` — see `src/types/admin.ts` for the full list
+
+### Chart specs — recharts (Claude Code builds these)
+
+**RevenueChart** — line chart
+
+- Two lines: Revenue (brand orange `#F27A1A`) and AI Cost (muted gray)
+- X-axis: days of week (Mon–Sun) or hours (24h mode)
+- Y-axis: dollar amounts formatted as $0k/$2k/$4k etc.
+- Tooltip on hover showing both values
+- Responsive — fills container width
+- Library: `recharts` (already available in the project)
+
+**ProjectsByType** — horizontal bar chart
+
+- One bar per creation type (Website, Book, Game, Art)
+- Colors: Website = brand orange, Book = purple/accent, Game = green, Art = amber
+- Bar shows percentage fill + count label
+- This may be buildable with pure CSS/Tailwind rather than recharts — decide when building
+
+**AIGenerationChart** — stacked bar chart
+
+- X-axis: days of week
+- Y-axis: dollar cost ($0–$700)
+- Stacked by creation type (same color coding as above)
+- Shows total cost label on hover
+- Library: recharts
+
+### Time filter behaviour
+
+The `period` field in admin-store drives all data. When the user clicks 24h/7d/30d/90d:
+
+1. `setPeriod(value)` updates the store and automatically calls `fetchOverview()`
+2. All charts and stats re-render with the new data
+3. Chart X-axis labels adapt (hours for 24h, days for 7d/30d/90d)
+
+### Admin-specific API endpoints (inform Kingsley)
+
+These are separate from user-facing endpoints. All require admin role on the JWT.
+
+```
+GET  /admin/overview?period=7d    ← all stats, funnel, chart data, referrals, activity, users
+GET  /admin/users                 ← paginated user list with search/filter
+GET  /admin/projects              ← project moderation queue
+GET  /admin/revenue               ← detailed revenue and billing data
+```
+
+The `/admin/overview` endpoint returns everything the overview page needs in one call to avoid multiple waterfalls on load.
+
+### Stat card trend colours
+
+Derived from `AdminMetric.current` vs `AdminMetric.previous`. See section 18 step 42 for the full logic. Summary:
+
+- `current >= previous` → up arrow + `#4ADE80` green
+- `current < previous` → down arrow (rotated 180°) + `text-destructive`
+- `aiCostPerUser` is inverted — lower cost is good, so direction is flipped
+
+### MRR definition
+
+MRR (Monthly Recurring Revenue) = sum of all active Beginner subscriptions × $19 + all active Pro subscriptions × $49. Calculated server-side by Kingsley. Frontend displays the number only.
+
+### Admin auth — what Kingsley needs to add
+
+- `role: "user" | "admin"` field on the JWT payload
+- `role` field in the `/auth/me` response
+- All `/admin/**` endpoints must verify `role === "admin"` — return `403` otherwise
+- The frontend middleware will check `role` from the cookie/session before rendering any admin route
+
+### Plan badge colours (Recent Users table)
+
+- Free → gray pill `bg-subtle text-secondary`
+- Beginner → orange pill `bg-hover text-brand`
+- Pro → purple/accent pill `bg-accent text-purple-700`
+
+### Status badge colours (Recent Users table)
+
+- Active → green dot + text
+- Idle → gray dot + text
+- Churned → red dot + text
+
+### Do not modify
+
+All existing user-facing dashboard components and routes are untouched. Admin is additive — a completely separate route group.
+
+---
+
+## 18. ADMIN API INTEGRATION — TYPES, STORE, AND WIRING
+
+### Status
+
+Admin overview UI is fully built with mock data. Steps below wire it to real data.
+
+### Step 36 — `src/types/admin.ts` (create this file)
+
+```ts
+export type AdminPeriod = "24h" | "7d" | "30d" | "90d";
+export type AdminUserStatus = "active" | "idle" | "churned";
+
+export interface AdminMetric {
+  current: number;
+  previous: number;
+}
+
+export interface AdminStats {
+  totalUsers: AdminMetric;
+  mrr: AdminMetric;
+  projects: AdminMetric;
+  referralRev: AdminMetric;
+  aiCostPerUser: AdminMetric;
+}
+
+export interface AdminFunnel {
+  visitors: number;
+  signedUp: number;
+  created: number;
+  paid: number;
+  tiers: { free: number; beginner: number; pro: number };
+}
+
+export interface AdminProjectsByType {
+  website: { count: number; percentage: number };
+  book: { count: number; percentage: number };
+  game: { count: number; percentage: number };
+  art: { count: number; percentage: number };
+  published: number;
+  draft: number;
+  exported: number;
+}
+
+export interface AdminReferralTool {
+  tool: "claude" | "cursor" | "chatgpt" | "lovable";
+  clicks: number;
+  revenue: number;
+}
+
+export interface AdminActivityEvent {
+  id: string;
+  userName: string;
+  action: string;
+  target: string;
+  timestamp: string;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  tier: "free" | "beginner" | "pro";
+  projects: number;
+  lastActive: string;
+  revenue: string;
+  status: AdminUserStatus;
+}
+
+export interface AdminChartPoint {
+  day: string;
+  revenue: number;
+  aiCost: number;
+  website: number;
+  book: number;
+  game: number;
+  art: number;
+}
+
+export interface AdminOverviewData {
+  stats: AdminStats;
+  funnel: AdminFunnel;
+  projectsByType: AdminProjectsByType;
+  referralTools: AdminReferralTool[];
+  avgPerClick: number;
+  totalReferralRevenue: number;
+  recentActivity: AdminActivityEvent[];
+  recentUsers: AdminUser[];
+  chartData: AdminChartPoint[];
+}
+```
+
+Export all from `src/types/index.ts` barrel.
+
+### Step 37 — `src/lib/api/admin.ts` (create this file)
+
+```ts
+import api from "@/lib/api";
+import type { AdminPeriod } from "@/types/admin";
+
+export const getAdminOverview = (period: AdminPeriod) =>
+  api.get<AdminOverviewData>(`/admin/overview?period=${period}`);
+
+export const getAdminUsers = (params: {
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => api.get("/admin/users", { params });
+
+export const getAdminProjects = () => api.get("/admin/projects");
+
+export const getAdminRevenue = () => api.get("/admin/revenue");
+```
+
+### Step 38 — `src/store/admin-store.ts` (create this file)
+
+```ts
+"use client";
+import { create } from "zustand";
+import type { AdminOverviewData, AdminPeriod } from "@/types/admin";
+import { getAdminOverview } from "@/lib/api/admin";
+
+interface AdminStore {
+  overview: AdminOverviewData | null;
+  period: AdminPeriod;
+  isLoading: boolean;
+  error: string | null;
+  setPeriod: (p: AdminPeriod) => void;
+  fetchOverview: () => Promise<void>;
+}
+
+export const useAdminStore = create<AdminStore>((set, get) => ({
+  overview: null,
+  period: "7d",
+  isLoading: false,
+  error: null,
+
+  setPeriod: (p) => {
+    set({ period: p });
+    get().fetchOverview();
+  },
+
+  fetchOverview: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      // TODO: uncomment when backend is ready
+      // const { data } = await getAdminOverview(get().period)
+      // set({ overview: data, isLoading: false })
+
+      // Stub — remove when API is ready
+      set({ isLoading: false });
+    } catch {
+      set({ error: "Failed to load admin overview.", isLoading: false });
+    }
+  },
+}));
+```
+
+### Step 39 — Wire overview page to admin-store
+
+Update `src/app/(admin)/admin-dashboard-overview/page.tsx`:
+
+- Add `"use client"` directive
+- Call `fetchOverview()` in a `useEffect` on mount
+- Read `overview`, `isLoading`, `error` from `useAdminStore`
+- Pass store data as props to each section component
+- Show a loading skeleton while `isLoading` is true
+- Show an inline error card if `error` is set
+
+Each component already accepts props with mock defaults — no component changes needed. The page is the only file that changes.
+
+```tsx
+"use client";
+import { useEffect } from "react";
+import { useAdminStore } from "@/store/admin-store";
+// ... existing imports
+
+export default function AdminOverviewPage() {
+  const { overview, period, isLoading, error, fetchOverview } = useAdminStore();
+
+  useEffect(() => {
+    fetchOverview();
+  }, []);
+
+  if (error)
+    return (
+      <div className="p-6">
+        <Typography variant="body-sm" className="text-destructive">
+          {error}
+        </Typography>
+      </div>
+    );
+
+  return (
+    <div>
+      <AdminDashboardOverviewHeader />{" "}
+      {/* reads period from store internally */}
+      <AdminDashboardSummary stats={overview?.stats} />
+      <AdminCharts chartData={overview?.chartData} funnel={overview?.funnel} />
+      <AdminDetailedSummary
+        projectsByType={overview?.projectsByType}
+        referralTools={overview?.referralTools}
+        avgPerClick={overview?.avgPerClick}
+        totalReferralRevenue={overview?.totalReferralRevenue}
+        recentActivity={overview?.recentActivity}
+      />
+      <AiGenerationChart data={overview?.chartData} />
+      <RecentUserCard users={overview?.recentUsers} />
+    </div>
+  );
+}
+```
+
+### Step 40 — Wire time filter to admin-store
+
+`AdminDashboardOverviewHeader` contains the 24h/7d/30d/90d tabs. Wire them to the store:
+
+```tsx
+// Inside AdminDashboardOverviewHeader
+import { useAdminStore } from "@/store/admin-store"
+
+const { period, setPeriod } = useAdminStore()
+
+// On tab click:
+onClick={() => setPeriod("7d")
+
+// Active tab styling — read `period` to derive active state
+className={cn(period === "7d" && "bg-brand text-white")}
+```
+
+`setPeriod` automatically calls `fetchOverview()` so all components re-render with new data when the filter changes.
+
+### Step 41 — Update each section component to accept optional props
+
+Each admin component currently has hardcoded mock data at the top. Update the prop interface to accept `data?` from the store while keeping mock as the default fallback:
+
+Pattern (apply to all admin components):
+
+```tsx
+// Before
+export function AdminDashboardSummary() {
+  const data = MOCK_STATS; // always mock
+}
+
+// After
+interface AdminDashboardSummaryProps {
+  stats?: AdminStats; // optional — falls back to mock when undefined (loading state)
+}
+
+export function AdminDashboardSummary({
+  stats = MOCK_STATS,
+}: AdminDashboardSummaryProps) {
+  // same render, now uses real data when passed
+}
+```
+
+This means during loading, components show mock data as a skeleton rather than blank. When real data arrives, it replaces mock automatically.
+
+### Step 42 — Stat card trend direction logic
+
+`AdminDashboardSummary` receives `AdminMetric` objects (`{ current, previous }`) and derives:
+
+- Percentage: `Math.abs(((current - previous) / previous) * 100).toFixed(1)`
+- Direction: `current >= previous` → up arrow + `#4ADE80` green text
+- Direction: `current < previous` → down arrow (rotate 180°) + `text-destructive` red text
+- Special case for `aiCostPerUser`: direction is inverted — lower cost is good (up arrow + green even if current < previous)
+
+Do NOT receive a precomputed `%` from the backend. Always derive it on the frontend from `current` and `previous`.
+
+### Admin API — what Kingsley needs (add to INSTRUCTIONS.md)
+
+```
+GET /admin/overview?period=24h|7d|30d|90d
+Auth: cookie required + role === "admin"
+Response: AdminOverviewData shape (see types above)
+
+GET /admin/users?search=&page=1&limit=20
+Auth: cookie required + role === "admin"
+Response: { users: AdminUser[], total: number, page: number, pages: number }
+
+GET /admin/projects
+Auth: cookie required + role === "admin"
+Response: project moderation queue (shape TBD)
+
+GET /admin/revenue
+Auth: cookie required + role === "admin"
+Response: detailed revenue data (shape TBD)
+```
+
+Backend must also add `role: "user" | "admin"` to:
+
+- The JWT payload
+- The `/auth/me` response
+
+Middleware will check `role === "admin"` before allowing any `/admin/**` route.
+
+### Build order — admin integration steps
+
+| #     | Step                                                                         | Status                                                |
+| ----- | ---------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 32–35 | Admin UI built                                                               | ✅ done                                               |
+| 36    | `src/types/admin.ts` (+ barrel re-export)                                    | ✅ done                                               |
+| 37    | `src/lib/api/admin.ts`                                                       | ✅ done                                               |
+| 38    | `src/store/admin-store.ts` — fetchOverview stubbed with TODO                 | ✅ done                                               |
+| 39    | Wire admin-dashboard-overview/page.tsx to admin-store                        | ✅ done                                               |
+| 40    | Wire range tabs to period/setPeriod from admin-store                         | ✅ done                                               |
+| 41    | Section components accept optional props with mock fallback                  | ✅ done                                               |
+| 42    | AdminDashboardSummary derives trend from AdminMetric; aiCostPerUser inverted | ✅ done                                               |
+| —     | Wire real API calls (remove stubs)                                           | ⏸ backend dependency                                  |
+| —     | Admin middleware role check                                                  | ⏸ backend dependency (needs cookie name + role field) |
