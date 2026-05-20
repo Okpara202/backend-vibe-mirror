@@ -279,7 +279,7 @@ src/components/chat/input/
 ```
 src/store/
 ├── admin-store.ts          ✅ overview, period, isLoading, error, setPeriod, fetchOverview (stubbed)
-├── auth-store.ts           ✅ user, tier, tokenBalance, referralEarnings
+├── auth-store.ts           ✅ user (with role), tier, tokenBalance, referralEarnings, role ("user" | "admin", default "user")
 ├── chat-store.ts           ✅ messages, status, isLoadingMessages, planMode, selectedType, projectId
 ├── conversations-store.ts  ✅ list (ConversationMeta carries optional projectId), fetchAll stub
 ├── project-store.ts        ✅ projects, activeProject, addProject / updateProject / removeProject
@@ -296,7 +296,7 @@ src/types/
 │                    AdminReferralTool, AdminActivityEvent, AdminUser, AdminChartPoint, AdminOverviewData
 ├── message.ts    ✅ full discriminated union — User + Assistant + UserAttachment
 ├── project.ts    ✅ ProjectStatus, ProjectMeta, ProjectCreation
-├── store.ts      ✅ all store interfaces, ConversationMeta with optional projectId
+├── store.ts      ✅ all store interfaces, ConversationMeta with optional projectId, User carries role: "user" | "admin"
 └── index.ts      ✅ barrel re-export
 ```
 
@@ -1362,7 +1362,7 @@ Inline edit on the project title in the project home view (click title to edit).
 
 - **Same repo** — admin lives in `src/app/(admin)/` route group
 - **Internal TekAIDA team only** — not visible to customers
-- **Auth** — same JWT cookie as the main app. Kingsley must add `role: "user" | "admin"` to the JWT and to the `/auth/me` response. Middleware checks `role === "admin"` before allowing any `/admin` route. Non-admins are redirected to `/dashboard`.
+- **Auth** — same JWT cookie as the main app. Kingsley must add `role: "user" | "admin"` to the JWT and to the `/auth/me` response. Middleware checks `role === "admin"` before allowing any `/admin` route. Non-admins are redirected to `/dashboard`. Frontend: `User` type and `useAuthStore` already carry `role` (default `"user"`); `setSession` reads `payload.user.role` once backend sends it.
 - **In scope for June 5 launch** — all four pages ship with the main product
 - **Division of work** — developer builds all UI components (layout, sidebar, stat cards, tables, page shells) using the existing design system. Claude Code handles: recharts chart components, admin store, API wiring, and connecting everything to the auth system.
 

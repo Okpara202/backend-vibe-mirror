@@ -7,12 +7,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
   tier: "free",
   tokenBalance: 0,
   referralEarnings: 0,
+  role: "user",
   setSession: (payload) =>
     set({
       user: payload.user,
       tier: payload.tier,
       tokenBalance: payload.tokenBalance,
       referralEarnings: payload.referralEarnings,
+      role: payload.user.role,
     }),
   updateTokenBalance: (n) => set({ tokenBalance: n }),
   clearSession: () =>
@@ -21,5 +23,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
       tier: "free",
       tokenBalance: 0,
       referralEarnings: 0,
+      role: "user",
     }),
 }));

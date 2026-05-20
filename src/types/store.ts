@@ -16,6 +16,7 @@ export interface User {
   name: string;
   email: string;
   avatarUrl?: string;
+  role: "user" | "admin";
 }
 
 export interface AuthStore {
@@ -23,6 +24,7 @@ export interface AuthStore {
   tier: Tier;
   tokenBalance: number;
   referralEarnings: number;
+  role: "user" | "admin";
   setSession: (payload: {
     user: User;
     tier: Tier;
